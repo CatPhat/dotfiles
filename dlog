@@ -1,0 +1,281 @@
+BEGIN LOG ENTRY -  20180224192256
+Fixed horrible nvidia performance issues with downgrade to 4.14/387
+
+1. Searched Arch archive repo for downgraded versions of the packages listed in step 2.
+> https://archive.archlinux.org/repos/
+
+2. Downgraded via pacman
+> pacman -U linux-4.14.15-1-x86_64.pkg.tar.xz linux-headers-4.14.15-1-x86_64.pkg.tar.xz acpi_call-1.1.0-96-x86_64.pkg.tar.xz nvidia-387.34-21-x86_64.pkg.tar.xz nvidia-settings-387.34-1-x86_64.pkg.tar.xz nvidia-utils-387.34-5-x86_64.pkg.tar.xz opencl-nvidia-387.34-5-x86_64.pkg.tar.xz libxnvctrl-387.34-1-x86_64.pkg.tar.xz
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180301000624
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180301000745
+Stability issues with polybar, graphics, xorg etc.. were most likely caused by overclocked CPU with low vcore values.
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180228170948
+timedatectl set-timezone America/Denver
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180228171143
+sudo pacman -S noto-fonts
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180228174549
+user9@abox ~/dotfiles> zathura
+error: could not open plugin directory: /usr/lib/zathura
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302131727
+fish bin paths need to be fixed.
+
+user9@abox ~> type time
+type: Could not find “time”
+
+user9@abox ~> bash
+[user9@abox ~]$ time
+
+real    0m0.000s
+user    0m0.000s
+sys     0m0.000s
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302132955
+In reference to Fish "time" issue from previous dlog entry.
+It is not a pathing issue, but rather a built in bash function.
+https://github.com/fish-shell/fish-shell/issues/117
+
+Issue was "resolved" by implementing realtime.fish function:
+https://github.com/fish-shell/fish-shell/issues/117#issuecomment-262372225
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302133704
+Add hack font (vim ui/diff uses it)
+sudo pacman -S ttf-hack
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302133920
+Put .gitconfig from dotfiles in home directory
+stow -S git -d ~/dotfiles/.config -t ~
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302145455
+sudo pacman -S nitrogen
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302152207
+sudo pacman -S rsync
+
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302170415
+ stow -S nvim -d ~/dotfiles/.config -t ~/.config/nvim/
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302171952
+sudo pacman -S python-neovim
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302172138
+sudo pacman -S python2-neovim
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302173825
+curl -L https://get.oh-my.fish | fish
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302173909
+ omf install bobthefish
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302174416
+ omf remove bobthefish
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302205831
+trizen -S nerd-fonts-source-code-pro
+(don't need nerd-fonts-complete)
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180302221536
+double check .Xresources
+ 83  rofi.run-shell-command: {terminal} -e "fish -ic {cmd}"
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303005152
+Fixed nvidia 390.25 performance issues by downgrading to 387.34.
+
+The following thread discusses how to do this in a relatively simple manner.
+https://bbs.archlinux.org/viewtopic.php?pid=1766195#p1766195
+
+Script used:
+git clone https://gist.github.com/gavinhungry/f02cb60acc971b6709c462b334c01c38 nvidia-387.34
+cd nvidia-387.34
+
+curl -O https://archive.archlinux.org/packages/n/nvidia-utils/nvidia-utils-387.34-5-x86_64.pkg.tar.xz
+extra-x86_64-build -c -- -I nvidia-utils-387.34-5-x86_64.pkg.tar.xz
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303110050
+sudo pacman -S sshfs
+sshfs user@host:/dir /local/mount
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303111104
+Sans la liberté de blâmer, il n'est pas d'éloge flatteur, i.e. something like "Where there is no freedom of blaming, there can be no genuine praise"
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303125911
+sudo pacman -S youtube-dl
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303143645
+#set fehbg, generated via .scripts/random-wallpaper.sh
+stow -S feh -d ~/dotfiles/.config -t ~/
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303144547
+ sudo pacman -S scrot
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303152545
+sudo pacman -S dunst
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303154626
+sudo pacman -S unzip
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303181123
+sudo pacman -S dunst
+sudo pacman -S adwaita-icon-theme
+mkdir ~/.config/dunst
+stow -S dunst -d ~/dotfiles/.config -t ~/.config/dunst
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303202046
+sudo pacman -S jq
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180303212430
+sudo pacman -S go
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305084002
+trizen -S conky-nvidia
+mkdir ~/.config/conky
+stow -S conky -d ~/dotfiles/.config/ -t ~/.config/conky
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305120148
+sudo pacman -S unclutter
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305121704
+sudo pacman -S dolphin
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305131316
+mkdir ~/.scripts
+stow -S .scripts -d ~/dotfiles -t ~/.scripts
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305133459
+trizen -S maim
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180305144343
+sudo pacman -S xdotool
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306100656
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306101815
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306154205
+stow -S rofi -d ~/dotfiles/.config/ -t ~/.config/rofi
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306155549
+sudo pacman -S qalculate-gtk
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306171143
+ # might be a fix for odd mouse behavior
+ # https://wiki.archlinux.org/index.php/unclutter
+ unclutter-xfixes-git
+ trizen -S  unclutter-xfixes-git
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180306172530
+# removed due to annoying mouse behavior
+trizen -R  unclutter-xfixes-git
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311180657
+appending to dlog to test gitolite auto mirror to github
+https://jkraemer.net/2016/03/automatic-mirroring-of-gitolite-repositories-to-github
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311181329
+github mirror test2
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311181617
+github mirror test with updated rsa key
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311181934
+github mirror test4, added shell header and chmod +x to hook script
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311183001
+test 5
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311183955
+test 6
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180311184425
+gitolite mirror test
+Uncomment the 'repo-specific-hooks' line in .gitolite.rc
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312120136
+test
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312121115
+test 9
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312121442
+ran the following command on git@git.vedos.ai for gitolite mirroring
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312124023
+added SSH_AUTH_SOCK var to repo hook
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312124139
+test
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312124650
+enable ssh-ident agent forwarding
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312125020
+test
+END LOG ENTRY
+
+BEGIN LOG ENTRY -  20180312125342
+test
+END LOG ENTRY
+

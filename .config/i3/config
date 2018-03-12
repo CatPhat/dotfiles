@@ -1,0 +1,471 @@
+#-----------------------------------#
+#    catphat i3 Configuration       #
+#-----------------------------------#
+
+# Set super as modifier key.
+set $mod Mod4
+
+# Set font family.
+font pango:monospace 11
+
+#-------------------------#
+#    Color Definition     #
+#-------------------------#
+
+## Base16 Ocean
+# Author: Chris Kempson (http://chriskempson.com)
+#
+# You can use these variables anywhere in the i3 configuration file.
+
+set $base00 #2b303b
+set $base01 #343d46
+set $base02 #4f5b66
+set $base03 #65737e
+set $base04 #a7adba
+set $base05 #c0c5ce
+set $base06 #dfe1e8
+set $base07 #eff1f5
+set $base08 #bf616a
+set $base09 #d08770
+set $base0A #ebcb8b
+set $base0B #a3be8c
+set $base0C #96b5b4
+set $base0D #8fa1b3
+set $base0E #b48ead
+set $base0F #ab7967
+
+set $transparent #00000000
+
+#-------------------------#
+#     Launch Bindings     #
+#-------------------------#
+
+# Application Launcher
+bindsym $mod+grave exec     "fish -c 'rofi -m -5 -show run'"
+
+# SSH launcher
+bindsym Mod1+grave exec     "rofi -m -5 -show ssh"
+
+# Window Switcher
+bindsym $mod+Tab exec       "rofi -show window"
+
+# Terminal
+# bindsym $mod+Return exec "i3-sensible-terminal"
+bindsym $mod+Return exec    "termite -e 'tmux new-session'"
+
+# Lock Screen
+bindsym $mod+Shift+Tab exec "~/.local/bin/lock.sh"
+
+#-------------------------#
+#      Function Keys      #
+#-------------------------#
+
+# Set Compose key for special characters
+exec --no-startup-id                "setxkbmap -option compose:rctrl"
+
+# Screen backlight brightness
+bindsym XF86MonBrightnessUp exec    "light -A 5 -s intel_backlight"
+bindsym XF86MonBrightnessDown exec  "light -U 5 -s intel_backlight"
+
+# Volume control
+bindsym XF86AudioRaiseVolume exec   "pamixer -i 5"
+bindsym XF86AudioLowerVolume exec   "pamixer -d 5"
+bindsym XF86AudioMute exec          "pamixer -t"
+# Media player controls
+bindsym XF86AudioPlay exec          "playerctl play-pause"
+bindsym XF86AudioNext exec          "playerctl next"
+bindsym XF86AudioPrev exec          "playerctl previous"
+
+## Screenshots
+bindsym --release Print exec        "~/.scripts/./screenshot.sh --desktop"
+bindsym --release Mod1+Sys_Req exec "~/.scripts/./screenshot.sh --active-window"
+bindsym --release Shift+Print exec  "~/.scripts/./screenshot.sh --select"
+
+#-------------------------#
+#       Workspaces        #
+#-------------------------#
+
+set $middle_monitor DVI-I-1
+set $left_monitor HDMI-0
+set $right_monitor DP-4
+
+# Name workspaces
+
+# Middle monitor
+set $ws1_m      1:
+set $ws2_m      2:
+set $ws3_m      3:
+set $ws4_m      4:
+set $ws5_m      5:
+set $ws6_m      6:
+set $ws7_m      7:
+set $ws8_m      8:
+set $ws9_m      9:
+set $ws10_m     10:
+
+# Left monitor
+set $ws1_l      11:
+set $ws2_l      12:
+set $ws3_l      13:
+set $ws4_l      14:
+set $ws5_l      15:
+set $ws6_l      16:
+set $ws7_l      17:
+set $ws8_l      18:
+set $ws9_l      19:
+set $ws10_l     20:
+
+# Right monitor
+set $ws1_r      21:
+set $ws2_r      22:
+set $ws3_r      23:
+set $ws4_r      24:
+set $ws5_r      25:
+set $ws6_r      26:
+set $ws7_r      27:
+set $ws8_r      28:
+set $ws9_r      29:
+set $ws10_r     30:
+
+
+workspace $ws1_m output     $middle_monitor
+workspace $ws2_m output     $middle_monitor
+workspace $ws3_m output     $middle_monitor
+workspace $ws4_m output     $middle_monitor
+workspace $ws5_m output     $middle_monitor
+workspace $ws6_m output     $middle_monitor
+workspace $ws7_m output     $middle_monitor
+workspace $ws8_m output     $middle_monitor
+workspace $ws9_m output     $middle_monitor
+workspace $ws10_m output    $middle_monitor
+
+workspace $ws1_l output     $left_monitor
+workspace $ws2_l output     $left_monitor
+workspace $ws3_l output     $left_monitor
+workspace $ws4_l output     $left_monitor
+workspace $ws5_l output     $left_monitor
+workspace $ws6_l output     $left_monitor
+workspace $ws7_l output     $left_monitor
+workspace $ws8_l output     $left_monitor
+workspace $ws9_l output     $left_monitor
+workspace $ws10_l output    $left_monitor
+
+workspace $ws1_r output     $right_monitor
+workspace $ws2_r output     $right_monitor
+workspace $ws3_r output     $right_monitor
+workspace $ws4_r output     $right_monitor
+workspace $ws5_r output     $right_monitor
+workspace $ws6_r output     $right_monitor
+workspace $ws7_r output     $right_monitor
+workspace $ws8_r output     $right_monitor
+workspace $ws9_r output     $right_monitor
+workspace $ws10_r output    $right_monitor
+
+# Move focused workspace to monitor
+bindsym $mod+Shift+bracketleft move workspace to output left
+bindsym $mod+Shift+bracketright move workspace to output right
+
+#-------------------------#
+#       Containers        #
+#-------------------------#
+
+# Focus the parent container
+bindsym $mod+a focus parent
+
+# Focus the child container
+bindsym $mod+d focus child
+
+# Set split orientation
+bindsym $mod+g split h
+bindsym $mod+v split v
+
+# Toggle container fullscreen
+bindsym $mod+f fullscreen toggle
+
+# Change container layout
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Move focuses container to monitor
+bindsym $mod+Shift+greater move container to output right
+bindsym $mod+Shift+less move container to output left
+
+# Resize containers
+bindsym $mod+r mode "resize"
+mode "resize" {
+        bindsym h resize shrink width 4 px or 4 ppt
+        bindsym j resize grow height 4 px or 4 ppt
+        bindsym k resize shrink height 4 px or 4 ppt
+        bindsym l resize grow width 4 px or 4 ppt
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+# move container to workspace
+bindsym $mod+Shift+Up mode "move-center"
+mode "move-center" {
+    # Move focused container to workspace
+    bindsym 1 move container to workspace $ws1_m; mode "default"
+    bindsym 2 move container to workspace $ws2_m; mode "default"
+    bindsym 3 move container to workspace $ws3_m; mode "default"
+    bindsym 4 move container to workspace $ws4_m; mode "default"
+    bindsym 5 move container to workspace $ws5_m; mode "default"
+    bindsym 6 move container to workspace $ws6_m; mode "default"
+    bindsym 7 move container to workspace $ws7_m; mode "default"
+    bindsym 8 move container to workspace $ws8_m; mode "default"
+    bindsym 9 move container to workspace $ws9_m; mode "default"
+    bindsym 0 move container to workspace $ws10_m; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Shift+Left mode "move-left"
+mode "move-left" {
+    # Move focused container to workspace
+    bindsym 1 move container to workspace $ws1_l; mode "default"
+    bindsym 2 move container to workspace $ws2_l; mode "default"
+    bindsym 3 move container to workspace $ws3_l; mode "default"
+    bindsym 4 move container to workspace $ws4_l; mode "default"
+    bindsym 5 move container to workspace $ws5_l; mode "default"
+    bindsym 6 move container to workspace $ws6_l; mode "default"
+    bindsym 7 move container to workspace $ws7_l; mode "default"
+    bindsym 8 move container to workspace $ws8_l; mode "default"
+    bindsym 9 move container to workspace $ws9_l; mode "default"
+    bindsym 0 move container to workspace $ws10_l; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Shift+Right mode "move-right"
+mode "move-right" {
+    # Move focused container to workspace
+    bindsym 1 move container to workspace $ws1_r; mode "default"
+    bindsym 2 move container to workspace $ws2_r; mode "default"
+    bindsym 3 move container to workspace $ws3_r; mode "default"
+    bindsym 4 move container to workspace $ws4_r; mode "default"
+    bindsym 5 move container to workspace $ws5_r; mode "default"
+    bindsym 6 move container to workspace $ws6_r; mode "default"
+    bindsym 7 move container to workspace $ws7_r; mode "default"
+    bindsym 8 move container to workspace $ws8_r; mode "default"
+    bindsym 9 move container to workspace $ws9_r; mode "default"
+    bindsym 0 move container to workspace $ws10_r; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+
+# view workspace
+bindsym $mod+Up mode "view-center"
+mode "view-center" {
+    # Switch to workspace
+    bindsym 1 workspace $ws1_m; mode "default"
+    bindsym 2 workspace $ws2_m; mode "default"
+    bindsym 3 workspace $ws3_m; mode "default"
+    bindsym 4 workspace $ws4_m; mode "default"
+    bindsym 5 workspace $ws5_m; mode "default"
+    bindsym 6 workspace $ws6_m; mode "default"
+    bindsym 7 workspace $ws7_m; mode "default"
+    bindsym 8 workspace $ws8_m; mode "default"
+    bindsym 9 workspace $ws9_m; mode "default"
+    bindsym 0 workspace $ws10_m; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Left mode "view-left"
+mode "view-left" {
+    # Switch to workspace
+    bindsym 1 workspace $ws1_l; mode "default"
+    bindsym 2 workspace $ws2_l; mode "default"
+    bindsym 3 workspace $ws3_l; mode "default"
+    bindsym 4 workspace $ws4_l; mode "default"
+    bindsym 5 workspace $ws5_l; mode "default"
+    bindsym 6 workspace $ws6_l; mode "default"
+    bindsym 7 workspace $ws7_l; mode "default"
+    bindsym 8 workspace $ws8_l; mode "default"
+    bindsym 9 workspace $ws9_l; mode "default"
+    bindsym 0 workspace $ws10_l; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Right mode "view-right"
+mode "view-right" {
+    # Switch to workspace
+    bindsym 1 workspace $ws1_r; mode "default"
+    bindsym 2 workspace $ws2_r; mode "default"
+    bindsym 3 workspace $ws3_r; mode "default"
+    bindsym 4 workspace $ws4_r; mode "default"
+    bindsym 5 workspace $ws5_r; mode "default"
+    bindsym 6 workspace $ws6_r; mode "default"
+    bindsym 7 workspace $ws7_r; mode "default"
+    bindsym 8 workspace $ws8_r; mode "default"
+    bindsym 9 workspace $ws9_r; mode "default"
+    bindsym 0 workspace $ws10_r; mode "default"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+
+#-------------------------#
+#         Windows         #
+#-------------------------#
+
+# Set border size
+for_window [class="^.*"] border pixel 2
+
+# Window colors
+
+# Basic color configuration using the Base16 variables for windows and borders.
+# Property Name         Border  BG      Text    Indicator Child Border
+client.focused          $base05 $base0D $base00 $base0D $base0D
+client.focused_inactive $base01 $base01 $base05 $base03 $base01
+client.unfocused        $base01 $base00 $base05 $base01 $base01
+client.urgent           $base08 $base08 $base00 $base08 $base08
+client.placeholder      $base00 $base00 $base05 $base00 $base00
+client.background       $base07
+
+# KILL focused window
+bindsym $mod+Shift+q kill
+
+# Change focused window
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Toggle sticky window
+bindsym $mod+Shift+s sticky toggle
+
+# Toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# Change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# Permanent floating windows
+for_window [instance="Msgcompose" class="Thunderbird"] floating enable
+for_window [window_role="Preferences" class="Thunderbird"] floating enable
+for_window [class="mpv"] floating enable
+for_window [class="feh"] floating enable
+
+#-------------------------#
+#     Session Control     #
+#-------------------------#
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace
+bindsym $mod+Shift+r restart
+
+# Power menu
+set $sysmenu "  [r]estart - [l]ogout - [s]uspend - re[b]oot - po[w]eroff  "
+bindsym $mod+Shift+e      mode $sysmenu
+
+mode --pango_markup $sysmenu {
+    bindsym r         restart
+    bindsym l         exit
+    bindsym w         exec "systemctl poweroff"
+    bindsym b         exec "systemctl reboot"
+    bindsym s         mode "default"; exec "systemctl suspend"
+    bindsym Return    mode "default"
+    bindsym Escape    mode "default"
+}
+
+#-------------------------#
+#     Session Startup     #
+#-------------------------#
+
+# Monitor Layout
+#exec --no-startup-id        "autorandr -c"
+
+# Window Compositing
+exec_always --no-startup-id     "killall compton; compton -b --config $HOME/.config/compton/compton.conf --logpath $HOME/.local/dotlogs/compton/compton.log -d :0"
+
+# Removable media daemon
+exec --no-startup-id            "udiskie -a"
+
+# Notification Daemon
+exec_always --no-startup-id     "pkill dunst; dunst"
+
+# Conky
+exec_always --no-startup-id     "killall conky; sleep 1; conky"
+
+# Lock screen
+#exec_always --no-startup-id    "i3lock -u -i $HOME/.local/share/locked.png"
+
+# Redshift
+#exec --no-startup-id        "redshift"
+
+#-------------------------#
+#        polybar          #
+#-------------------------#
+
+exec_always --no-startup-id "~/.config/polybar/launch.sh"
+#exec --no-startup-id        "~/.config/xeventbind/xeventbind resolution ~/.config/polybar/launch.sh"
+
+#-------------------------#
+#        gaps             #
+#-------------------------#
+
+set $default_gaps_inner 6
+set $default_gaps_outer 0
+gaps inner $default_gaps_inner
+gaps outer $default_gaps_outer
+
+set $mode_gaps gaps
+set $mode_gaps_outer outer gaps
+set $mode_gaps_inner inner gaps
+bindsym $mod+Shift+g mode "$mode_gaps"
+mode "$mode_gaps" {
+    bindsym o      mode "$mode_gaps_outer"
+    bindsym i      mode "$mode_gaps_inner"
+
+    bindsym 0      mode "default", exec --no-startup-id i3-msg "gaps inner current set 0" && i3-msg "gaps outer current set 0"
+    bindsym d      mode "default", exec --no-startup-id i3-msg "gaps inner current set $default_gaps_inner" && i3-msg "gaps outer current set $default_gaps_outer"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_inner" {
+    bindsym plus  gaps inner current plus 5
+    bindsym minus gaps inner current minus 5
+    bindsym 0     mode "default", gaps inner current set 0
+    bindsym d     mode "default", gaps inner current set $default_gaps_inner
+
+    bindsym Shift+plus  gaps inner all plus 5
+    bindsym Shift+minus gaps inner all minus 5
+    bindsym Shift+0     mode "default", gaps inner all set 0
+    bindsym Shift+d     mode "default", gaps inner all set $default_gaps_inner
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_outer" {
+    bindsym plus  gaps outer current plus 5
+    bindsym minus gaps outer current minus 5
+    bindsym 0     mode "default", gaps outer current set 0
+    bindsym d     mode "default", gaps outer current set $default_gaps_outer
+
+    bindsym Shift+plus  gaps outer all plus 5
+    bindsym Shift+minus gaps outer all minus 5
+    bindsym Shift+0     mode "default", gaps outer all set 0
+    bindsym Shift+d     mode "default", gaps outer all set $default_gaps_outer
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
