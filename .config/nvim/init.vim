@@ -189,6 +189,10 @@ let g:delimitMate_expand_cr = 2
 let g:delimitMate_expand_inside_quotes = 1
 
 
+" ══════════════════════╡ SirVer/ultisnips ╞════════════════════════
+let g:UltiSnipsSnippetsDir = "~/.config/nvim/UltiSnips"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+
 " ══════════════════════╡ ctrlpvim/ctrlp.vim ╞════════════════════════
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
