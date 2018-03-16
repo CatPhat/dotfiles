@@ -46,6 +46,9 @@ Plug 'kassio/neoterm'
 " ctrlp.vim
 " https://github.com/ctrlpvim/ctrlp.vim
 Plug 'ctrlpvim/ctrlp.vim'
+" Tag browser
+" https://github.com/universal-ctags/ctags
+Plug 'universal-ctags/ctags'
 
 " ════════════ Navigation ══════════════
 
@@ -56,7 +59,7 @@ Plug 'haya14busa/incsearch.vim'
 " IncSearch fix for easymotion
 Plug 'haya14busa/incsearch-easymotion.vim'
 " Buffer navigation
-"Plug 'jeetsukumaran/vim-buffergator'
+Plug 'jeetsukumaran/vim-buffergator'
 " Vim-tmux-navigation
 Plug 'christoomey/vim-tmux-navigator'
 
@@ -106,7 +109,7 @@ Plug 'majutsushi/tagbar'
 " Code Linting
 "Plug 'benekastah/neomake'
 " Live Web Preview
-Plug 'jaxbot/browserlink.vim'
+"Plug 'jaxbot/browserlink.vim'
 " Vim-Go
 Plug 'fatih/vim-go'
 " Deoplete-Go
@@ -195,7 +198,7 @@ let g:UltiSnipsJumpForwardTrigger = "<tab>"
 
 " ══════════════════════╡ ctrlpvim/ctrlp.vim ╞════════════════════════
 let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_cmd = 'CtrlPLastMode'
 let g:ctrlp_working_path_mode = ''
 
 " ══════════════════════╡ set leader key before plugins ╞════════════════════════
@@ -232,10 +235,14 @@ let g:go_highlight_build_constraints = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_build_constraints = 1
+let g:go_highlight_function_arguments = 1
+let g:go_highlight_function_calls = 1
 
 let g:go_auto_sameids = 1
 let g:go_auto_type_info = 1
 let g:go_def_mode = 'guru'
+let g:go_fmt_fail_silently = 1
+let g:go_fmt_command = "goimports"
 
 " if enabled this overrides existing mappings
 let g:go_def_mapping_enabled = 0
@@ -251,6 +258,39 @@ au FileType go nmap <Leader>s <Plug>(go-implements)
 au FileType go nmap <Leader>i <Plug>(go-info)
 au FileType go nmap <Leader>gl <Plug>(go-metalinter)
 au FileType go nmap <Leader>gc <Plug>(go-callers)
+au FileType go nmap <Leader>d :GoDecls<CR>
+
+" ════════════════════════════╡ majutsushi/tagbar ╞═══════════════════════════════
+
+nmap <F8> :TagbarToggle<CR>
+let g:tagbar_type_go = {
+	\ 'ctagstype' : 'go',
+	\ 'kinds'     : [
+		\ 'p:package',
+		\ 'i:imports:1',
+		\ 'c:constants',
+		\ 'v:variables',
+		\ 't:types',
+		\ 'n:interfaces',
+		\ 'w:fields',
+		\ 'e:embedded',
+		\ 'm:methods',
+		\ 'r:constructor',
+		\ 'f:functions'
+	\ ],
+	\ 'sro' : '.',
+	\ 'kind2scope' : {
+		\ 't' : 'ctype',
+		\ 'n' : 'ntype'
+	\ },
+	\ 'scope2kind' : {
+		\ 'ctype' : 't',
+		\ 'ntype' : 'n'
+	\ },
+	\ 'ctagsbin'  : 'gotags',
+	\ 'ctagsargs' : '-sort -silent'
+\ }
+
 " ╭────────────────────────────────────────────────────────────────────────────╮
 " │                              General Config                                │
 " ╰────────────────────────────────────────────────────────────────────────────╯
@@ -261,7 +301,7 @@ au FileType go nmap <Leader>gc <Plug>(go-callers)
 set timeout ttimeout
 set timeoutlen=1000 ttimeoutlen=0
 " Don't redraw screen for non-typed macros
-set lazyredraw
+"set lazyredraw
 
 " ═══════════════════════════════╡ Proofing ╞═══════════════════════════════════
 
@@ -338,33 +378,33 @@ nnoremap <leader>l <C-w>l
 "nnoremap <c-h> <c-w>h
 
 " toggle buffer (switch between current and last buffer)
-nnoremap <silent> <leader>bb <C-^>
-
-" go to next buffer
-nnoremap <silent> <leader>bn :bn<CR>
-nnoremap <C-l> :bn<CR>
-
-" go to previous buffer
-nnoremap <silent> <leader>bp :bp<CR>
-" https://github.com/neovim/neovim/issues/2048
-nnoremap <C-h> :bp<CR>
-
-" close buffer
-nnoremap <silent> <leader>bd :bd<CR>
-
-" kill buffer
-nnoremap <silent> <leader>bk :bd!<CR>
-
-" list buffers
-nnoremap <silent> <leader>bl :ls<CR>
-" list and select buffer
-nnoremap <silent> <leader>bg :ls<CR>:buffer<Space>
-
-" horizontal split with new buffer
-nnoremap <silent> <leader>bh :new<CR>
-
-" vertical split with new buffer
-nnoremap <silent> <leader>bv :vnew<CR>
+"nnoremap <silent> <leader>bb <C-^>
+"
+"" go to next buffer
+"nnoremap <silent> <leader>bn :bn<CR>
+"nnoremap <C-l> :bn<CR>
+"
+"" go to previous buffer
+"nnoremap <silent> <leader>bp :bp<CR>
+"" https://github.com/neovim/neovim/issues/2048
+"nnoremap <C-h> :bp<CR>
+"
+"" close buffer
+"nnoremap <silent> <leader>bd :bd<CR>
+"
+"" kill buffer
+"nnoremap <silent> <leader>bk :bd!<CR>
+"
+"" list buffers
+"nnoremap <silent> <leader>bl :ls<CR>
+"" list and select buffer
+"nnoremap <silent> <leader>bg :ls<CR>:buffer<Space>
+"
+"" horizontal split with new buffer
+"nnoremap <silent> <leader>bh :new<CR>
+"
+"" vertical split with new buffer
+"nnoremap <silent> <leader>bv :vnew<CR>
 
 " redraw screan and clear search highlighted items
 "http://stackoverflow.com/questions/657447/vim-clear-last-search-highlighting#answer-25569434
