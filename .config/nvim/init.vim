@@ -393,8 +393,8 @@ autocmd QuitPre * | silent! lclose | endif
 
 " location list navigator
 nmap <c-n> :lnext<CR>
-nmap <c-m> :lprevious<CR>
-
+nmap <c-m> :lprev<CR>
+nmap <c-b> :ll<CR>
 
 " improved keyboard navigation
 nnoremap <leader>h <C-w>h
