@@ -41,7 +41,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " Filetype icons
 Plug 'ryanoasis/vim-devicons'
 " Neoterm
-Plug 'kassio/neoterm'
+"Plug 'kassio/neoterm'
 " Fuzzy file, buffer, mru, tag, etc finder
 " ctrlp.vim
 " https://github.com/ctrlpvim/ctrlp.vim
@@ -107,7 +107,7 @@ Plug 'airblade/vim-gitgutter'
 " Tag bar
 Plug 'majutsushi/tagbar'
 " Code Linting
-"Plug 'benekastah/neomake'
+Plug 'benekastah/neomake'
 " Live Web Preview
 "Plug 'jaxbot/browserlink.vim'
 " Vim-Go
@@ -119,7 +119,7 @@ Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/sy
 " Deoplete-jedi
 Plug 'zchee/deoplete-jedi'
 " Go Compiler
-Plug 'rjohnsondev/vim-compiler-go'
+"Plug 'rjohnsondev/vim-compiler-go'
 
 call plug#end()
 
@@ -161,12 +161,35 @@ let g:gitgutter_sign_removed_first_line = ''
 let g:gitgutter_sign_modified_removed = ''
 
 " ═══════════════════════════╡ benekastah/neomake ╞═════════════════════════════
-"let g:neomake_c_enabled_makers = ['gcc']
-"autocmd! BufWritePost,BufEnter * Neomake
-"let g:neomake_logfile='/tmp/error.log'
-"let g:neomake_open_list = 2
-"let g:neomake_error_sign = { 'text': '', 'texthl': 'NeoErrorMsg' }
-"let g:neomake_warning_sign = { 'text': '', 'texthl': 'NeoWarningMsg' }
+let g:neomake_c_enabled_makers = ['gcc']
+autocmd! BufWritePost,BufEnter * Neomake
+let g:neomake_logfile='/tmp/error.log'
+let g:neomake_open_list = 2
+let g:neomake_error_sign = { 'text': '', 'texthl': 'NeoErrorMsg' }
+let g:neomake_warning_sign = { 'text': '', 'texthl': 'NeoWarningMsg' }
+"let g:neomake_go_gometalinter_args = ['--disable-all',  '--enable=gosimple', '--enable=unused', '--enable=misspell', '--enable=staticcheck', '--enable=interfacer']
+let g:neomake_go_gometalinter_maker = {
+  \ 'args': [
+  \   '--tests',
+  \   '--enable-gc',
+  \   '--concurrency=3',
+  \   '--fast',
+  \   '-D', 'aligncheck',
+  \   '-D', 'dupl',
+  \   '-D', 'gocyclo',
+  \   '-D', 'gotype',
+  \   '-E', 'errcheck',
+  \   '-E', 'misspell',
+  \   '-E', 'unused',
+  \   '%:p:h',
+  \ ],
+  \ 'append_file': 0,
+  \ 'errorformat':
+  \   '%E%f:%l:%c:%trror: %m,' .
+  \   '%W%f:%l:%c:%tarning: %m,' .
+  \   '%E%f:%l::%trror: %m,' .
+  \   '%W%f:%l::%tarning: %m'
+  \ }
 
 " ════════════════════════════╡ Shougo/deoplete ╞═══════════════════════════════
 let g:deoplete#enable_at_startup = 1
@@ -243,6 +266,7 @@ let g:go_auto_type_info = 1
 let g:go_def_mode = 'guru'
 let g:go_fmt_fail_silently = 1
 let g:go_fmt_command = "goimports"
+let g:go_metalinter_autosave = 0
 
 " if enabled this overrides existing mappings
 let g:go_def_mapping_enabled = 0
@@ -363,6 +387,13 @@ autocmd CursorHold,FocusGained,FocusLost * rshada|wshada
 "noremap! <M-k> <Up>
 "noremap <M-l> <Right>
 "noremap! <M-l> <Right>
+
+"autoclose location list on file exist
+autocmd QuitPre * | silent! lclose | endif
+
+" location list navigator
+nmap <c-n> :lnext<CR>
+nmap <c-M> :lprevious<CR>
 
 
 " improved keyboard navigation
@@ -500,6 +531,7 @@ function! <SID>SynStack()
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
 endfunc
 nmap <C-S-P> :call <SID>SynStack()<CR>
+
 
 " ═══════════════════════════╡ Yaml ╞═════════════════════════════
 au FileType yaml setl sw=2 sts=2 ts=2
