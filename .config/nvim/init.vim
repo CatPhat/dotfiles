@@ -201,6 +201,7 @@ let g:deoplete#keyword_patterns['default'] = '\h\w*'
 let g:deoplete#omni#input_patterns = {}
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 let g:deoplete#sources#go#align_class = 1
+"let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 
 " ══════════════════════╡ rjohnsondev/vim-compiler-go ╞════════════════════════
 let g:golang_goroot = "/usr/lib/go"
@@ -389,7 +390,7 @@ autocmd CursorHold,FocusGained,FocusLost * rshada|wshada
 "noremap! <M-l> <Right>
 
 "autoclose location list on file exist
-autocmd QuitPre * | silent! lclose | endif
+autocmd QuitPre * | silent! lclose
 
 " location list navigator
 nmap <c-n> :lnext<CR>
