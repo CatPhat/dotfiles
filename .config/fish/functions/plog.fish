@@ -1,5 +1,4 @@
 function plog --description "add personal-log entry, plog <plog title> <optional log statement arg(s)>"
-
     set -l argcount (count $argv)
     if test $argcount -eq 0;
        printf "No title provided.\nUsage: plog <title> <optional log body statement(s)>"
