@@ -1,5 +1,5 @@
 #-----------------------------------#
-#    catphat i3 Configuration       #
+#    Beanaroo's i3 Configuration    #
 #-----------------------------------#
 
 # Set super as modifier key.
@@ -12,27 +12,24 @@ font pango:monospace 11
 #    Color Definition     #
 #-------------------------#
 
-## Base16 Ocean
-# Author: Chris Kempson (http://chriskempson.com)
-#
-# You can use these variables anywhere in the i3 configuration file.
+# Define colors
+set $base00     #2b303b
+set $base01     #343d46
+set $base02     #4f5b66
+set $base03     #65737e
+set $base04     #a7adba
+set $base05     #c0c5ce
+set $base06     #dfe1e8
+set $base07     #eff1f5
 
-set $base00 #2b303b
-set $base01 #343d46
-set $base02 #4f5b66
-set $base03 #65737e
-set $base04 #a7adba
-set $base05 #c0c5ce
-set $base06 #dfe1e8
-set $base07 #eff1f5
-set $base08 #bf616a
-set $base09 #d08770
-set $base0A #ebcb8b
-set $base0B #a3be8c
-set $base0C #96b5b4
-set $base0D #8fa1b3
-set $base0E #b48ead
-set $base0F #ab7967
+set $red        #bf616a
+set $orange     #d08770
+set $yellow     #ebcb8b
+set $green      #a3be8c
+set $cyan       #96b5b4
+set $blue       #8fa1b3
+set $magenta    #b48ead
+set $brown      #ab7967
 
 set $transparent #00000000
 
@@ -42,9 +39,6 @@ set $transparent #00000000
 
 # Application Launcher
 bindsym $mod+grave exec     "fish -c 'rofi -m -5 -show run'"
-
-# SSH launcher
-bindsym Mod1+grave exec     "rofi -m -5 -show ssh"
 
 # Window Switcher
 bindsym $mod+Tab exec       "rofi -show window"
@@ -77,17 +71,17 @@ bindsym XF86AudioNext exec          "playerctl next"
 bindsym XF86AudioPrev exec          "playerctl previous"
 
 ## Screenshots
-bindsym --release Print exec        "~/.scripts/./screenshot.sh --desktop"
-bindsym --release Mod1+Sys_Req exec "~/.scripts/./screenshot.sh --active-window"
-bindsym --release Shift+Print exec  "~/.scripts/./screenshot.sh --select"
+bindsym --release Print exec        "scrot -z ~/incoming/screenshots/%Y-%m-%d_%k:%M:%S.png"
+bindsym --release Mod1+Sys_Req exec "scrot -zu ~/incoming/screenshots/%Y-%m-%d_%k:%M:%S.png"
+bindsym --release Shift+Print exec  "scrot -zs ~/incoming/screenshots/%Y-%m-%d_%k:%M:%S.png"
 
 #-------------------------#
 #       Workspaces        #
 #-------------------------#
 
-set $middle_monitor DVI-I-1
-set $left_monitor HDMI-0
-set $right_monitor DP-4
+set $middle_monitor DP-2
+set $left_monitor DP-0
+set $right_monitor DVI-D-0
 
 # Name workspaces
 
@@ -314,17 +308,16 @@ mode "view-right" {
 
 # Set border size
 for_window [class="^.*"] border pixel 2
+#for_window [class="^.*"] border none
+#for_window [class="albert"] border none
+#for_window [class="Synapse"] border none
 
 # Window colors
-
-# Basic color configuration using the Base16 variables for windows and borders.
-# Property Name         Border  BG      Text    Indicator Child Border
-client.focused          $base05 $base0D $base00 $base0D $base0D
-client.focused_inactive $base01 $base01 $base05 $base03 $base01
-client.unfocused        $base01 $base00 $base05 $base01 $base01
-client.urgent           $base08 $base08 $base00 $base08 $base08
-client.placeholder      $base00 $base00 $base05 $base00 $base00
-client.background       $base07
+#                        border      backgrnd    text       indicator
+client.focused          $base02     $base02     $base05     $base02
+client.focused_inactive $base00     $base00     $base05     $base00
+client.unfocused        $base00     $base00     $base03     $base00
+client.urgent           $red        $red        $base05     $red
 
 # KILL focused window
 bindsym $mod+Shift+q kill
@@ -357,8 +350,11 @@ bindsym $mod+space focus mode_toggle
 for_window [instance="Msgcompose" class="Thunderbird"] floating enable
 for_window [window_role="Preferences" class="Thunderbird"] floating enable
 for_window [class="mpv"] floating enable
-for_window [class="feh"] floating enable
-
+for_window [class="ffplay"] floating enable
+for_window [class="Remmina"] floating enable
+#for_window [class="jetbrains-rider"] floating enable
+for_window [class="Wireshark-gtk"] floating enable
+for_window [class="Wireshark-gtk"] move container to $ws2_r
 #-------------------------#
 #     Session Control     #
 #-------------------------#
@@ -391,16 +387,26 @@ mode --pango_markup $sysmenu {
 #exec --no-startup-id        "autorandr -c"
 
 # Window Compositing
-exec_always --no-startup-id     "killall compton; compton -b --config $HOME/.config/compton/compton.conf --logpath $HOME/.local/dotlogs/compton/compton.log -d :0"
+exec --no-startup-id "compton -b --config $HOME/.config/compton/compton.conf"
+#exec --no-startup-id "compton -b --config $HOME/.config/compton/compton.conf -d :0 --logpath $HOME/.local/dotlogs/compton/compton.log"
+#exec --no-startup-id "compton -b --config $HOME/.config/compton/compton.conf --logpath $HOME/.local/dotlogs/compton/compton.log -d :0"
+
+# Set desktop wallpaper
+exec --no-startup-id        "hsetroot -solid '#2B303B'"
+
+# Start Polkit authentication agent
+#exec --no-startup-id        "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
 # Removable media daemon
-exec --no-startup-id            "udiskie -a"
+exec --no-startup-id        "udiskie -a"
+
+# Auto hide mouse cursor
+exec --no-startup-id        "unclutter"
 
 # Notification Daemon
-exec_always --no-startup-id     "pkill dunst; dunst"
+exec_always --no-startup-id "pkill dunst; dunst"
 
-# Conky
-exec_always --no-startup-id     "killall conky; sleep 1; conky"
+exec --no-startup-id imwheel
 
 # Lock screen
 #exec_always --no-startup-id    "i3lock -u -i $HOME/.local/share/locked.png"
