@@ -12,14 +12,17 @@ set -x BROWSER "chromium"
 set -x TERMCMD "termite"
 set -x WEECHAT_HOME "$HOME/.config/weechat"
 set -x ENV_SET "yes"
-
+#set -x TERM "xterm-256color"
+#set -x TERMINAL "termite"
+set -x TERMINFO "$HOME/.terminfo"
 set -x NVIM_LOG_FILE "$HOME/.local/dotlogs/nvim/log"
-set -x GOPATH "$HOME/dev/go"
+#set -x GOBIN "/usr/bin/go/bin"
+set -x -U GOPATH "$HOME/dev/go"
 set PATH $PATH $GOPATH/bin
 
 set -g theme_powerline_fonts yes
 set -g theme_color_scheme base16
-set -g theme_nerd_fonts yes
+set -g theme_nerd_fonts no
 
 set -x LESS '-g -i -F -M -R -w -X -z-4'
 
@@ -74,5 +77,5 @@ fish_vi_key_bindings
 
 
 
-setenv SSH_ENV $HOME/.ssh/environment
+#setenv SSH_ENV $HOME/.ssh/environment
 

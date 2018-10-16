@@ -1,0 +1,1 @@
+/home/user9/.config/fisherman/ssh-ident.fish/functions/scp.fish
