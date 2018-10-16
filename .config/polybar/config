@@ -29,10 +29,10 @@ brown   = #AB7967
 margin-bottom = 5
 
 [bar/main]
-monitor = ${env:MONITOR:DVI-I-1}
+monitor = ${env:MONITOR:DP-2}
 width = 100%
-height = 28
-
+height = 30:-10
+enable-ipc = true
 background = ${colors.base00}
 foreground = ${colors.base05}
 
@@ -41,27 +41,34 @@ overline-color = ${colors.red}
 underline-size = 3
 underline-color = ${colors.base05}
 
+padding-top = 5
 padding-left = 0
 padding-right = 2
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = monospace:size=10;0
-font-1 = monospace:size=10;2
-font-2 = FontAwesome:pixelsize=12;1
+
+font-0 = "SauceCodePro Nerd Font:style:Semibold:size=10:antialias=false;0"
+font-5 = "Material Icons:size=12:antialias=true;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:antialias=false:size=18;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
 
 modules-left = i3
-modules-center =
-modules-right = hamster music volume pamixer rootfs homefs memory cpu temperature eth date
-
+modules-center = cpu memory temp0 eth rootfts
+#modules-right = hamster music volume pamixer date
+modules-right =  hamster pulseaudio date
 scroll-up = i3wm-wsnext
 scroll-down = i3wm-wsprev
+cursor-click = pointer
 
 [bar/left]
-monitor = ${env:MONITOR:HDMI-0}
+monitor = ${env:MONITOR:DP-0}
 width = 100%
-height = 28
-
+height = 23
+enable-ipc = true
 background = ${colors.base00}
 foreground = ${colors.base05}
 
@@ -70,27 +77,33 @@ overline-color = ${colors.red}
 underline-size = 3
 underline-color = ${colors.base05}
 
+padding-top = 5
 padding-left = 0
 padding-right = 2
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = monospace:size=10;0
-font-1 = monospace:size=10;2
-font-2 = FontAwesome:pixelsize=12;1
+
+font-0 = "monospace:size=10;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:size=10;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-5 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
 
 modules-left = i3
-modules-center =
-modules-right =
+modules-center = openweathermap-fullfeatured
+modules-right = pulseaudio date
 
 scroll-up = i3wm-wsnext
 scroll-down = i3wm-wsprev
 
 [bar/right]
-monitor = ${env:MONITOR:DP-4}
+monitor = ${env:MONITOR:DVI-D-0}
 width = 100%
-height = 28
-
+height = 30:-10
+enable-ipc = true
 background = ${colors.base00}
 foreground = ${colors.base05}
 
@@ -99,22 +112,42 @@ overline-color = ${colors.red}
 underline-size = 3
 underline-color = ${colors.base05}
 
+padding-top = 5
 padding-left = 0
 padding-right = 2
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = monospace:size=10;0
-font-1 = monospace:size=10;2
-font-2 = FontAwesome:pixelsize=12;1
+font-0 = "monospace:size=10;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:size=10;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-5 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
 
 modules-left = i3
-modules-center =
-modules-right =
+modules-center = openweathermap-fullfeatured
+modules-right = pulseaudio date
 
 scroll-up = i3wm-wsnext
 scroll-down = i3wm-wsprev
 
+[module/ipctest]
+type = custom/ipc
+hook-0 = echo foobar %pid%
+hook-1 = whoami
+format = <output>
+initial = 1
+
+[module/i3dwgo]
+type = custom/script
+exec = /home/user9/dev/go/src/vedos/i3dw-go/i3dw-go
+interval = .2
+format = <label>
+label-font = 4
+format-font = 4
+label = %output%
 
 [module/i3]
 type = internal/i3
@@ -176,30 +209,30 @@ click-left = pamixer -t
 scroll-up = pamixer -i 5
 scroll-down = pamixer -d 5
 
-;[module/volume]
-;type = internal/volume
-;
-;format-volume = <label-volume> <bar-volume>
-;label-volume = %{T3}
-;label-volume-foreground = ${colors.cyan}
-;
-;format-muted = <label-muted>
-;format-muted-foreground = ${colors.base03}
-;label-muted =  ────────
-;
-;bar-volume-width = 10
-;bar-volume-foreground-0 = ${colors.green}
-;bar-volume-foreground-1 = ${colors.green}
-;bar-volume-foreground-2 = ${colors.green}
-;bar-volume-foreground-3 = ${colors.green}
-;bar-volume-foreground-4 = ${colors.yellow}
-;bar-volume-foreground-5 = ${colors.orange}
-;bar-volume-foreground-6 = ${colors.red}
-;bar-volume-gradient = false
-;bar-volume-indicator = |
-;bar-volume-fill = ━
-;bar-volume-empty = ─
-;bar-volume-empty-foreground = ${colors.base05}
+[module/volume]
+type = internal/volume
+
+format-volume = <label-volume> <bar-volume>
+label-volume = %{T3}
+label-volume-foreground = ${colors.cyan}
+
+format-muted = <label-muted>
+format-muted-foreground = ${colors.base03}
+label-muted =  ────────
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.green}
+bar-volume-foreground-1 = ${colors.green}
+bar-volume-foreground-2 = ${colors.green}
+bar-volume-foreground-3 = ${colors.green}
+bar-volume-foreground-4 = ${colors.yellow}
+bar-volume-foreground-5 = ${colors.orange}
+bar-volume-foreground-6 = ${colors.red}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-fill = ━
+bar-volume-empty = ─
+bar-volume-empty-foreground = ${colors.base05}
 
 [module/rootfs]
 type = internal/fs
@@ -329,17 +362,17 @@ bar-load-fill = %{T2}
 bar-load-empty = %{T2}
 bar-load-empty-foreground = ${colors.base03}
 
-[module/temperature]
+[module/temp0]
 type = internal/temperature
-thermal-zone = 2
-warn-temperature = 60
+thermal-zone = 0
+warn-temperature = 70
 
 format = <ramp> <label>
 format-warn = <ramp> <label-warn>
 format-warn-underline = ${colors.red}
 
-label = %temperature%
-label-warn = %temperature%
+label = %temperature-c%
+label-warn = %temperature-c%
 label-warn-foreground = ${colors.orange}
 
 ramp-0 = %{T3}
@@ -359,16 +392,36 @@ ramp-6-foreground = ${colors.red}
 
 [module/eth]
 type = internal/network
-interface = enp8s0
+interface = enp7s0
 interval = 3.0
 
-format-connected-prefix = %{T3}  %{T-}
+format-connected-prefix = %{T4} %{T-}
 format-connected-prefix-foreground = ${colors.green}
-label-connected = %linkspeed%
+label-connected = %downspeed:5:7% %{T4}%{T-} %upspeed:5:7% %{T4}%{T-}
+label-connected-foreground = ${colors.blue}
 
 format-disconnected = <label-disconnected>
 label-disconnected-foreground = ${colors.base03}
-label-disconnected = %{T3}" "
+label-disconnected = %{T4}" "
+
+; Test connectivity every Nth update
+; A value of 0 disables the feature
+; NOTE: Experimental (needs more testing)
+; Default: 0
+ping-interval = 3
+
+; Accumulate values from all interfaces
+; when querying for up/downspeed rate
+; Default: false
+accumulate-stats = true
+
+; Only applies if <animation-packetloss> is used
+animation-packetloss-0 = ⚠
+animation-packetloss-0-foreground = #ffa64c
+animation-packetloss-1 = 📶
+animation-packetloss-1-foreground = #000000
+; Framerate in milliseconds
+animation-packetloss-framerate = 500
 
 [module/wlan]
 type = internal/network
@@ -437,7 +490,7 @@ animation-charging-framerate = 750
 type = internal/date
 interval = 5
 
-date = %m-%d-%Y
+date = %a %m-%d-%Y
 time = %H:%M
 
 ;format-prefix = 
@@ -448,3 +501,90 @@ label = %{T3}%{T-} %date% %{T3}%{T-} %time%
 label-foreground = ${colors.blue}
 
 ; vim:ft=dosini
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+; Sink to be used, if it exists (find using `pacmd list-sinks`, name field)
+; If not, uses default sink
+sink = alsa_output.pci-0000_00_1f.3.analog-stereo
+
+; Use PA_VOLUME_UI_MAX (~153%) if true, or PA_VOLUME_NORM (100%) if false
+; Default: true
+use-ui-max = false
+
+; Interval for volume increase/decrease (in percent points) (unreleased)
+; Default: 5
+interval = 5
+
+; Available tags:
+;   <label-volume> (default)
+;   <ramp-volume>
+;   <bar-volume>
+format-volume = %{T5} %{A3:pavucontrol &:} <label-volume> <bar-volume> %{A} %{T5-}
+;format-volume = <label-volume> <bar-volume>
+
+label-volume = %{T3}
+label-volume-foreground = ${colors.cyan}
+
+format-muted = <label-muted>
+format-muted-foreground = ${colors.base03}
+label-muted =  ────────
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.green}
+bar-volume-foreground-1 = ${colors.green}
+bar-volume-foreground-2 = ${colors.green}
+bar-volume-foreground-3 = ${colors.green}
+bar-volume-foreground-4 = ${colors.yellow}
+bar-volume-foreground-5 = ${colors.orange}
+bar-volume-foreground-6 = ${colors.red}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-fill = ━
+bar-volume-empty = ─
+bar-volume-empty-foreground = ${colors.base05}
+
+
+
+;; Available tokens:
+;;   %percentage% (default)
+;;label-muted = %{T4}
+;;label-muted-foreground = #666
+;
+;; Only applies if <ramp-volume> is used
+;ramp-volume-0 = %{T5}
+;ramp-volume-0-foreground = ${colors.blue}
+;ramp-volume-1 = %{T5}
+;ramp-volume-1-foreground = ${colors.green}
+;ramp-volume-2 = %{T5}
+;ramp-volume-2-foreground = ${colors.red}
+;
+;label-volume = %{T3}
+;label-volume-foreground = ${colors.cyan}
+;
+;format-muted = <label-muted>
+;format-muted-foreground = ${colors.base03}
+;label-muted =  ────────
+;
+;bar-volume-width = 10
+;bar-volume-foreground-0 = ${colors.green}
+;bar-volume-foreground-1 = ${colors.green}
+;bar-volume-foreground-2 = ${colors.green}
+;bar-volume-foreground-3 = ${colors.green}
+;bar-volume-foreground-4 = ${colors.yellow}
+;bar-volume-foreground-5 = ${colors.orange}
+;bar-volume-foreground-6 = ${colors.red}
+;bar-volume-gradient = false
+;bar-volume-indicator = |
+;bar-volume-fill = ━
+;bar-volume-empty = ─
+;bar-volume-empty-foreground = ${colors.base05}
+
+[module/openweathermap-fullfeatured]
+type = custom/script
+exec = ~/.dotfiles/.config/polybar/openweathermap-fullfeatured.sh
+interval = 600
+label-font = 7
+label-background = ${colors.base00}
+label-padding = 2

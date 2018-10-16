@@ -15,7 +15,7 @@ loud_color="%{F#EBCB8B}"
 warn_color="%{F#D08770}"
 max_color="%{F#BF616A}"
 reset_color="%{F-}"
-icon="%{T3}${icon_color}%{T-}"
+icon="%{T4}${icon_color}%{T-}"
 indicator="${reset_color}|"
 vol=$(pamixer --get-volume)
 
