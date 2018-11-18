@@ -7,7 +7,9 @@ allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
 #clickable_url = true
-font = SauceCodePro Nerd Font, Semibold 10
+#font = Hack Nerd Font Mono, 10
+font = SauceCodePro Nerd Font,Semibold 10
+#font = SauceCodePro Nerd Font, 13
 #font = Source Code Pro,Semibold 10
 scrollback_lines = 10000
 search_wrap = true
@@ -80,7 +82,7 @@ color21 = #dfe1e8
 
 
 [hints]
-font = Source Code Pro,bold 11
+font = SauceCodePro Nerd Font, Bold 10
 foreground = #343d46
 background = #ebcb8b
 padding = 2
