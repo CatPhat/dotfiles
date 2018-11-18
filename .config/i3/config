@@ -354,6 +354,8 @@ for_window [class="ffplay"] floating enable
 for_window [class="Remmina"] floating enable
 #for_window [class="jetbrains-rider"] floating enable
 for_window [class="Wireshark-gtk"] floating enable
+for_window [class="Python3"] floating enable
+for_window [class="python"] floating enable
 for_window [class="Wireshark-gtk"] move container to $ws2_r
 #-------------------------#
 #     Session Control     #
