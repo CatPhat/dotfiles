@@ -29,6 +29,9 @@ set -x LESS '-g -i -F -M -R -w -X -z-4'
 # Disable history file
 set -x LESSHISTFILE "-"
 
+set -x CXX 'g++'
+set -x CC 'gcc'
+
 # Set the Less input preprocessor.
 # Try both `lesspipe` and `lesspipe.sh` as either might exist on a system.
 #if count $argv[(i)lesspipe(|.sh)]
