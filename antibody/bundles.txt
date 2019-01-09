@@ -9,6 +9,9 @@ rupa/z
 zsh-users/zsh-completions
 zsh-users/zsh-autosuggestions
 
+b4b4r07/enhancd
+supercrabtree/k
+
 # these should be at last!
 sindresorhus/pure
 zsh-users/zsh-syntax-highlighting
