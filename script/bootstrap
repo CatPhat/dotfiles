@@ -7,7 +7,7 @@ set -e
 
 echo ''
 
-DEBUG=true
+DEBUG=false
 HWENV="arch-macbook"
 
 debug() {
@@ -155,24 +155,24 @@ find_zsh() {
 	fi
 }
 
-#setup_gitconfig
+setup_gitconfig
 install_symlinks
 install_hwenv_symlinks
-#install_symlinks_with_config_path
+install_symlinks_with_config_path
 
-#info "installing dependencies"
-#if ./bin/dot_update; then
-#	success "dependencies installed"
-#else
-#	fail "error installing dependencies"
-#fi
-#
-#zsh="$(find_zsh)"
-#test -z "$TRAVIS_JOB_ID" &&
-#	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
-#	which chsh >/dev/null 2>&1 &&
-#	chsh -s "$zsh" &&
-#	success "set $("$zsh" --version) at $zsh as default shell"
-#
-#echo ''
-#echo '  All installed!'
+info "installing dependencies"
+if ./bin/dot_update; then
+	success "dependencies installed"
+else
+	fail "error installing dependencies"
+fi
+
+zsh="$(find_zsh)"
+test -z "$TRAVIS_JOB_ID" &&
+	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
+	which chsh >/dev/null 2>&1 &&
+	chsh -s "$zsh" &&
+	success "set $("$zsh" --version) at $zsh as default shell"
+
+echo ''
+echo '  All installed!'
