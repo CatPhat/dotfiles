@@ -7,7 +7,8 @@ set -e
 
 echo ''
 
-DEBUG=false
+DEBUG=true
+HWENV="arch-macbook"
 
 debug() {
     if $DEBUG; then
@@ -88,13 +89,26 @@ link_file() {
 }
 
 install_symlinks() {
-	info 'installing symlinks into \$HOME'
+	info 'installing symlinks into $HOME'
 	find -H "$DOTFILES_ROOT" -maxdepth 3 -name '*.symlink' -not -path '*.git*' |
 		while read -r src; do
 			dst="$HOME/.$(basename "${src%.*}")"
 			link_file "$src" "$dst"
 		done
 }
+
+install_hwenv_symlinks() {
+	info 'installing symlinks based on Hardware environment into $HOME'
+	find -H "$DOTFILES_ROOT" -maxdepth 3 -name '*.envlink' -not -path '*.git*' |
+		while read -r src; do
+            debug $src
+            if [[ $src =~ .*$HWENV.* ]]; then
+	            dst="$HOME/.$(basename "${src%.*}")"
+			    link_file "$src" "$dst"
+            fi
+		done
+}
+
 
 # 'returns' and validates the output of a config.pathlink file
 parse_config_pathlink_file() {
@@ -141,23 +155,24 @@ find_zsh() {
 	fi
 }
 
-setup_gitconfig
+#setup_gitconfig
 install_symlinks
-install_symlinks_with_config_path
+install_hwenv_symlinks
+#install_symlinks_with_config_path
 
-info "installing dependencies"
-if ./bin/dot_update; then
-	success "dependencies installed"
-else
-	fail "error installing dependencies"
-fi
-
-zsh="$(find_zsh)"
-test -z "$TRAVIS_JOB_ID" &&
-	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
-	which chsh >/dev/null 2>&1 &&
-	chsh -s "$zsh" &&
-	success "set $("$zsh" --version) at $zsh as default shell"
-
-echo ''
-echo '  All installed!'
+#info "installing dependencies"
+#if ./bin/dot_update; then
+#	success "dependencies installed"
+#else
+#	fail "error installing dependencies"
+#fi
+#
+#zsh="$(find_zsh)"
+#test -z "$TRAVIS_JOB_ID" &&
+#	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
+#	which chsh >/dev/null 2>&1 &&
+#	chsh -s "$zsh" &&
+#	success "set $("$zsh" --version) at $zsh as default shell"
+#
+#echo ''
+#echo '  All installed!'
