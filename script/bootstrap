@@ -1,6 +1,4 @@
-#!/bin/sh
-#
-# bootstrap installs things.
+#!/bin/bash
 
 cd "$(dirname "$0")/.."
 DOTFILES_ROOT=$(pwd -P)
@@ -8,6 +6,14 @@ DOTFILES_ROOT=$(pwd -P)
 set -e
 
 echo ''
+
+DEBUG=false
+
+debug() {
+    if $DEBUG; then
+	    printf "\r  [ \033[00;35m??\033[0m ] $1\n"
+    fi
+}
 
 info() {
 	# shellcheck disable=SC2059
@@ -65,12 +71,15 @@ setup_gitconfig() {
 }
 
 link_file() {
+    debug "\$2 readlink: $(readlink $2)"
 	if [ -e "$2" ]; then
 		if [ "$(readlink "$2")" = "$1" ]; then
-			success "skipped $1"
+			success "skipped, valid existing symlink found \n \
+            target: $1 \n \
+              link: $2"
 			return 0
 		else
-			mv "$2" "$2.backup"
+#			mv "$2" "$2.backup"
 			success "moved $2 to $2.backup"
 		fi
 	fi
@@ -78,13 +87,50 @@ link_file() {
 	success "linked $1 to $2"
 }
 
-install_dotfiles() {
-	info 'installing dotfiles'
+install_symlinks() {
+	info 'installing symlinks into \$HOME'
 	find -H "$DOTFILES_ROOT" -maxdepth 3 -name '*.symlink' -not -path '*.git*' |
 		while read -r src; do
 			dst="$HOME/.$(basename "${src%.*}")"
 			link_file "$src" "$dst"
 		done
+}
+
+# 'returns' and validates the output of a config.pathlink file
+parse_config_pathlink_file() {
+    desired_path=$(cat "$1")
+    if [[ $(wc -l <"$1") -eq 1 ]]; then
+        echo $(eval "echo $desired_path")
+    else
+        fail "Invalid number of lines in $1 \n \
+        Should be only 1 line with a full path to the desired symlink location.\n \
+        e.g.: \"\$HOME/.config\""
+    fi
+}
+
+# If a directory contains 'config.pathlink' then this will symlink
+# the parent folder name to the desired root folder specified in
+# the respective 'config.pathlink' file.
+# e.g.:
+#       > cat ~/.dotfiles/compton/config.pathlink
+#       "$HOME/.config"
+#       > full_symlink_target_path=$("$HOME/.config/compton")
+install_symlinks_with_config_path() {
+    info 'installing symlinks with parent folder'
+	find -H "$DOTFILES_ROOT" -maxdepth 3 -name 'config.pathlink' -not -path '*.git*' |
+        while read -r src; do
+            desired_path=$(parse_config_pathlink_file "$src")
+            src_path=$(dirname $src)
+            # get relative path from the resulting difference
+            rpath="${src_path#"$DOTFILES_ROOT"}"
+            dst_path="$desired_path/$rpath"
+            debug "src: $src"
+            debug "desired_path: $desired_path"
+            debug "rpath: $rpath"
+            debug "src_path: $src_path"
+            debug "dst_path: $dst_path"
+            link_file "$src_path" "$dst_path"
+        done
 }
 
 find_zsh() {
@@ -95,22 +141,23 @@ find_zsh() {
 	fi
 }
 
-setup_gitconfig
-install_dotfiles
+#setup_gitconfig
+#install_symlinks
+install_symlinks_with_config_path
 
-info "installing dependencies"
-if ./bin/dot_update; then
-	success "dependencies installed"
-else
-	fail "error installing dependencies"
-fi
-
-zsh="$(find_zsh)"
-test -z "$TRAVIS_JOB_ID" &&
-	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
-	which chsh >/dev/null 2>&1 &&
-	chsh -s "$zsh" &&
-	success "set $("$zsh" --version) at $zsh as default shell"
-
-echo ''
-echo '  All installed!'
+#info "installing dependencies"
+#if ./bin/dot_update; then
+#	success "dependencies installed"
+#else
+#	fail "error installing dependencies"
+#fi
+#
+#zsh="$(find_zsh)"
+#test -z "$TRAVIS_JOB_ID" &&
+#	test "$(expr "$SHELL" : '.*/\(.*\)')" != "zsh" &&
+#	which chsh >/dev/null 2>&1 &&
+#	chsh -s "$zsh" &&
+#	success "set $("$zsh" --version) at $zsh as default shell"
+#
+#echo ''
+#echo '  All installed!'
