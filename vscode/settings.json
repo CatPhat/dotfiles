@@ -1,0 +1,73 @@
+{
+  "editor.fontSize": 14,
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.tabSize": 4,
+  "editor.trimAutoWhitespace": true,
+  "editor.tabCompletion": "on",
+  "explorer.openEditors.visible": 0,
+  "window.restoreWindows": "none",
+  "terminal.external.osxExec": "iTerm.app",
+  "terminal.integrated.fontSize": 14,
+  "files.autoSave": "onFocusChange",
+  "extensions.autoUpdate": true,
+  "editor.cursorStyle": "line",
+  "editor.cursorBlinking": "solid",
+  "window.title": "${activeEditorMedium}${separator}${rootName}",
+  "files.trimTrailingWhitespace": true,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "workbench.colorTheme": "Monokai Night",
+  "window.zoomLevel": 0,
+  "extensions.ignoreRecommendations": false,
+  "go.coverageDecorator": {
+    "type": "gutter"
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "/vendor": true
+  },
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.fontAliasing": "antialiased",
+  "docker.showExplorer": false,
+  "workbench.editor.showIcons": true,
+  "go.testOnSave": false,
+  "go.coverOnSave": false,
+  "explorer.confirmDragAndDrop": false,
+  "search.smartCase": true,
+  "editor.fontFamily": "FuraCode Nerd Font Mono Retina, Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "files.associations": {
+    "*.tmpl": "gotemplate"
+  },
+  "go.lintTool": "golangci-lint",
+  "go.testTimeout": "3m",
+  "breadcrumbs.enabled": true,
+  "go.useLanguageServer": true,
+  "go.enableCodeLens": {
+    "references": false,
+    "runtest": true
+  },
+  "telemetry.enableTelemetry": false,
+  "terraform.telemetry.enabled": false,
+  "telemetry.enableCrashReporter": false,
+  "monokaiPro.fileIconsMonochrome": true,
+  "go.useCodeSnippetsOnFunctionSuggest": true,
+  "workbench.iconTheme": "vs-seti",
+  "go.formatTool": "goformat",
+  "search.useGlobalIgnoreFiles": true,
+  "workbench.editor.highlightModifiedTabs": true,
+  "search.showLineNumbers": true,
+  "[go]": {
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true
+  },
+  "go.coverOnSingleTest": true,
+  "ruby.intellisense": "rubyLocate",
+  "ruby.format": "rubocop",
+  "ruby.codeCompletion": "rcodetools",
+  "ruby.useLanguageServer": true
+}
