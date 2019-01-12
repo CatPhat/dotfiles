@@ -1,0 +1,5 @@
+snippet errw "Creates a wrapped error"
+if err != nil {
+	return ${1:nil}, errors.Wrap(err, "$2")
+}
+endsnippet

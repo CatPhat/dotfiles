@@ -1,0 +1,53 @@
+## BEGIN arbitrary order
+
+# Easily see what's happening on your computer's ports 
+# https://github.com/caarlos0/ports
+caarlos0/ports kind:path
+
+# git fetch && git merge in a breeze 
+# https://github.com/caarlos0/zsh-git-fetch-merge
+caarlos0/zsh-git-fetch-merge kind:path
+
+# A zsh plugin to sync git repositories and clean them up. 
+# https://github.com/caarlos0/zsh-git-sync
+caarlos0/zsh-git-sync kind:path
+
+# zsh mkdir && cd 
+# https://github.com/caarlos0/zsh-mkc
+caarlos0/zsh-mkc
+
+# Open pull requests from the command line. 
+# https://github.com/caarlos0/zsh-open-pr
+caarlos0/zsh-open-pr kind:path
+
+# Because your terminal should be able to perform tasks asynchronously without external tools! 
+# https://github.com/mafredri/zsh-async
+mafredri/zsh-async
+
+# z - jump around 
+# https://github.com/rupa/z
+rupa/z
+
+# Additional completion definitions for Zsh. 
+# https://github.com/zsh-users/zsh-completions
+zsh-users/zsh-completions
+
+# Fish-like autosuggestions for zsh 
+# https://github.com/zsh-users/zsh-autosuggestions 
+zsh-users/zsh-autosuggestions
+
+## END arbitrary order
+
+## Must be last
+
+# Pretty, minimal and fast ZSH prompt 
+# https://github.com/sindresorhus/pure
+sindresorhus/pure
+
+# Fish shell like syntax highlighting for Zsh.
+# https://github.com/zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-syntax-highlighting
+
+# ZSH port of Fish history search (up arrow) 
+# https://github.com/zsh-users/zsh-history-substring-search
+zsh-users/zsh-history-substring-search

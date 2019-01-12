@@ -1,0 +1,1 @@
+/home/user9/.config/fisherman/ssh-ident.fish/functions/__sif_check_if_path_is_valid.fish
