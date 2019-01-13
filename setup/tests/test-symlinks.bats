@@ -10,7 +10,7 @@ source ${SETUP_SYMLINKS}
 
 @test "find_symlinks .symlink returns correct count" {
     run find_symlinks "symlink"
-    assert_equal "${#lines[@]}" 7
+    assert_equal "${#lines[@]}" 5
 }
 
 @test "find_symlinks .envlink returns correct count" {
