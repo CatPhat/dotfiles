@@ -8,8 +8,8 @@ source ${SETUP_SYMLINKS}
     assert_equal "$status" 0
 }
 
-@test "find_symlinks .symlink returns correct count" {
-    run find_symlinks "symlink"
+@test "find_symlinks .homelink returns correct count" {
+    run find_symlinks "homelink"
     assert_equal "${#lines[@]}" 4
 }
 
