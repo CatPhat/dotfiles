@@ -12,7 +12,7 @@ SETUP_SYMLINKS=${SETUP_SYMLINKS:-${DOTFILES_REPO_ROOT}/setup/symlinks.sh}
 SETUP_CONFIG=${SETUP_SYMLINKS:-${DOTFILES_REPO_ROOT}/setup/config.sh}
 
 debug_print() {
-    printf "\r  [ \033[00;35mBATS-DEBUG\033[0m ] $1\n" >&3
+    printf "\e[35m\e[1m BATS-DEBUG\e[0m -> $1\n" >&3
 }
 
 function teardown() {
@@ -20,7 +20,7 @@ function teardown() {
     if [[ $result  != true && $BATS_DEBUG == true ]] || [[ $FORCE_DEBUG == true ]]; then
         debug_print "status: ${status}"
         debug_print "result: ${result}"
-        if (( ${#lines[@]} < 2  )); then
+        if (( "${#lines[@]}" < 2  )); then
             debug_print "output: ${output}"
         else
             debug_print "output: ...omitted, see lines below."
@@ -33,8 +33,8 @@ function teardown() {
 }
 
 assert_equal() {
-    local actual=$1
-    local expected=$2
+    local expected=$1
+    local actual=$2
     result=false; [[ $actual == $expected ]] && result=true
     if [[ $result != true ]]; then
         debug_print "expected: ${expected}"
