@@ -1,29 +1,27 @@
 #!/usr/bin/env bash
 
+function __print() {
+    echo -e "$1"
+}
+
 debug() {
     if $DEBUG; then
-	    printf "\r  [ \033[00;35m??\033[0m ] $1\n"
+    __print "\e[35m\e[1m DEBUG\e[0m -> $1\n"
     fi
 }
 
 info() {
-	# shellcheck disable=SC2059
-	printf "\r  [ \033[00;34m..\033[0m ] $1\n"
+	__print "\e[34m\e[1m INFO\e[0m  -> $1\n"
 }
 
 user() {
-	# shellcheck disable=SC2059
-	printf "\r  [ \033[0;33m??\033[0m ] $1\n"
+	__print "\e[33m\e[1m USER\e[0m  -> $1\n"
 }
 
 success() {
-	# shellcheck disable=SC2059
-	printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+	__print "\e[32m\e[1m OK\e[0m    -> $1\n"
 }
 
 fail() {
-	# shellcheck disable=SC2059
-	printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-	echo ''
-	exit
+	__print "\e[31m\e[1m FAIL\e[0m  -> $1\n"
 }
