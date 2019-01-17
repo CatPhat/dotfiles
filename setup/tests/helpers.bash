@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BATS_DEBUG=true
-FORCE_DEBUG=false
+FORCE_DEBUG=true
 
 # Root directory of integration tests.
 INTEGRATION_ROOT=$(dirname "$(readlink -f "$BASH_SOURCE")")
