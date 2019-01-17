@@ -8,7 +8,7 @@ cd $DOTFILES_ROOT
 
 debug "\$DOTFILES_ROOT: ${DOTFILES_ROOT}"
 info "Building Dockerfile"
-docker build --no-cache --build-arg dotfiles_root=${DOTFILES_ROOT} -f ${DOTFILES_ROOT}/setup/tests/Dockerfile --tag bats/bats:latest .
+docker build --build-arg dotfiles_root=${DOTFILES_ROOT} -f ${DOTFILES_ROOT}/setup/tests/Dockerfile --tag bats/bats:latest .
 
 info "Running bats-core unit tests"
 

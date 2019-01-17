@@ -66,6 +66,7 @@ function symlink_pathlinks() {
     info "Linking pathlinks."
     while read file ; do
         local desired_path=$(parse_config_pathlink_file "${file}")
+        info ${desired_path}
         local src_parent_folder=$(dirname ${file})
         local dst="$desired_path/${src_parent_folder##*/}"
 
@@ -84,7 +85,7 @@ function symlink_pathlinks() {
 
 # 'returns' and validates the output of a config.pathlink file
 function parse_config_pathlink_file() {
-    desired_path=$(cat "$1")
+    local desired_path=$(. <(echo -e echo $(<$1)))
     if [[ $(wc -l <"$1") -eq 1 ]]; then
         echo "${desired_path}"
     else
