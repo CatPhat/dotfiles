@@ -55,6 +55,45 @@ function symlink_homelinks() {
     info "Done linking homelinks\n"
 }
 
+# If a directory contains 'config.pathlink' then this will symlink
+# the parent folder name to the desired root folder specified in
+# the respective 'config.pathlink' file.
+# e.g.:
+#       > cat ~/.dotfiles/compton/config.pathlink
+#       "$HOME/.config"
+#       > full_symlink_target_path=$("$HOME/.config/compton")
+function symlink_pathlinks() {
+    info "Linking pathlinks."
+    while read file ; do
+        local desired_path=$(parse_config_pathlink_file "${file}")
+        local src_parent_folder=$(dirname ${file})
+        local dst="$desired_path/${src_parent_folder##*/}"
+
+        backup_link_target_if_exists "${src_parent_folder}" "${dst}"
+
+        [[ -e $(dirname ${dst}) ]] \
+            || info "$(dirname ${dst}) does not exist, making folder." && mkdir --parents ${dst}
+
+        ln -sf "${src_parent_folder}" "${dst}" \
+            && success "Successfully linked ${src_parent_folder} to ${dst}" \
+            || fail "Could not link ${src_parent_folder} to ${dst}"
+
+    done < <(find_symlinks "pathlink")
+    info "Done linking pathlinks.\n"
+}
+
+# 'returns' and validates the output of a config.pathlink file
+function parse_config_pathlink_file() {
+    desired_path=$(cat "$1")
+    if [[ $(wc -l <"$1") -eq 1 ]]; then
+        echo "${desired_path}"
+    else
+        fail "Invalid number of lines in $1 \n \
+        Should be only 1 line with a full path to the desired symlink location.\n \
+        e.g.: \"\$HOME/.config\""
+    fi
+}
+
 link_file() {
     debug "\$2 readlink: $(readlink $2)"
 	if [ -e "$2" ]; then
@@ -97,42 +136,4 @@ install_hwenv_symlinks() {
 install_hwenv_symlinks_with_config_path(){
     info 'installing symlinks based on the \$HWENV env value with specified parent folder'
 }
-
-# 'returns' and validates the output of a config.pathlink file
-parse_config_pathlink_file() {
-    desired_path=$(cat "$1")
-    if [[ $(wc -l <"$1") -eq 1 ]]; then
-        echo $(eval "echo $desired_path")
-    else
-        fail "Invalid number of lines in $1 \n \
-        Should be only 1 line with a full path to the desired symlink location.\n \
-        e.g.: \"\$HOME/.config\""
-    fi
-}
-
-# If a directory contains 'config.pathlink' then this will symlink
-# the parent folder name to the desired root folder specified in
-# the respective 'config.pathlink' file.
-# e.g.:
-#       > cat ~/.dotfiles/compton/config.pathlink
-#       "$HOME/.config"
-#       > full_symlink_target_path=$("$HOME/.config/compton")
-install_symlinks_with_config_path() {
-    info 'installing symlinks with specified parent folder'
-	find -H "$DOTFILES_ROOT" -maxdepth 3 -name 'config.pathlink' -not -path '*.git*' |
-        while read -r src; do
-            desired_path=$(parse_config_pathlink_file "$src")
-            src_path=$(dirname $src)
-            # get relative path from the resulting difference
-            rpath="${src_path#"$DOTFILES_ROOT"}"
-            dst_path="$desired_path/$rpath"
-            debug "src: $src"
-            debug "desired_path: $desired_path"
-            debug "rpath: $rpath"
-            debug "src_path: $src_path"
-            debug "dst_path: $dst_path"
-            link_file "$src_path" "$dst_path"
-        done
-}
-
 

@@ -98,3 +98,17 @@ source ${SETUP_SYMLINKS}
              $(find $HOME -maxdepth 1 -type l -name .$(basename "${homelink%.*}") -exec md5sum {} \;  | cut -d' ' -f1)
      done < <(find_symlinks "homelink")
 }
+
+@test "symlink pathlinks" {
+    run symlink_pathlinks
+
+    assert_equal \
+       "$(find_symlinks "pathlink" | wc -l)" \
+       "$(find $HOME -type l -exec ls {} \; | grep ".pathlink" | wc -l)"
+
+     while read pathlink ; do
+         assert_equal \
+             $(readlink  ${pathlink}) \
+             $(find $HOME -type l -name .$(basename "${pathlink%.*}") -exec readlink {} \;)
+     done < <(find_symlinks "pathlink")
+}
