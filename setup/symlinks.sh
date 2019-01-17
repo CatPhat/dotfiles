@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-#source "${DOTFILES_ROOT}/setup/config.sh"
-#source "${DOTFILES_ROOT}/setup/common.sh"
+source "${DOTFILES_ROOT}/setup/config.sh"
+source "${DOTFILES_ROOT}/setup/common.sh"
 
 # Find files with the specified symlink file type
 # Available symlink types: .symlink | .envlink | .pathlink
@@ -13,6 +13,35 @@ function find_symlinks() {
         echo "$file"
     done < <(find -H ${DOTFILES_ROOT} -name "*.$__symlink_file_type" -not -path '*.git*' -print0)
 #   echo "${__result[@]}"
+}
+
+# takes the given source file and target path and backs up the existing target
+# if the target exists and is not a symlink of the source.
+function backup_link_target_if_exists() {
+    local src="$1"
+    local target="$2"
+
+    local backup_folder="${DOTFILES_ROOT}/.backup"
+    local backup_logfile="${backup_folder}/backup.log"
+    local backup_date=$(date '+%Y-%m-%d.%H:%M:%S')
+    local target_parent_dir="$(dirname ${target})"
+    local backup_target_dest="${backup_folder}/${backup_date}-${target_parent_dir##*/}-$(basename ${target})"
+
+    if [[ -e ${target} ]]; then
+        if [[ $(readlink ${target}) == ${src} ]]; then
+            info 'link target matches source, ignoring.'
+        else
+            info "link target exists, moving to ${backup_target_dest}"
+
+            [[ -d ${backup_folder} ]] || mkdir ${backup_folder}
+            [[ -f ${backup_logfile} ]] || touch ${backup_logfile}
+
+            mv "${target}" "${backup_target_dest}"
+            echo "${backup_date} - Moved ${target} to ${backup_target_dest}" >> ${backup_logfile}
+        fi
+    else
+        debug 'target does not exist, not backing up target.'
+    fi
 }
 
 link_file() {
