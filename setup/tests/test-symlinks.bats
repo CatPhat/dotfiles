@@ -84,3 +84,17 @@ source ${SETUP_SYMLINKS}
 
     assert_equal "$(cat ${target_file})" "${random_string}"
 }
+
+@test "symlink homelinks" {
+    run symlink_homelinks
+
+    assert_equal \
+       "$(find_symlinks "homelink" | wc -l)" \
+       "$(find $HOME -maxdepth 1 -type l | wc -l)"
+
+     while read homelink ; do
+         assert_equal \
+             $(md5sum < ${homelink} | cut -d' ' -f1) \
+             $(find $HOME -maxdepth 1 -type l -name .$(basename "${homelink%.*}") -exec md5sum {} \;  | cut -d' ' -f1)
+     done < <(find_symlinks "homelink")
+}

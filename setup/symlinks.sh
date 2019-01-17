@@ -44,6 +44,17 @@ function backup_link_target_if_exists() {
     fi
 }
 
+function symlink_homelinks() {
+    info "linking homelinks"
+    while read file ; do
+		local dst="$HOME/.$(basename "${file%.*}")"
+        backup_link_target_if_exists "${file}" "${dst}"
+        ln -sf "${file}" "${dst}"
+        success "Successfully linked ${file} to ${dst}"
+    done < <(find_symlinks "homelink")
+    info "Done linking homelinks\n"
+}
+
 link_file() {
     debug "\$2 readlink: $(readlink $2)"
 	if [ -e "$2" ]; then
@@ -66,7 +77,7 @@ install_symlinks() {
 	find -H "$DOTFILES_ROOT" -maxdepth 3 -name '*.symlink' -not -path '*.git*' |
 		while read -r src; do
 			dst="$HOME/.$(basename "${src%.*}")"
-			link_file "$src" "$dst"
+			link_file "${src}" "${dst}"
 		done
 }
 
