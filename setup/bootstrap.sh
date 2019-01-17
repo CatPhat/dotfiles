@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
 
-cd "$(dirname "$0")/.."
-DOTFILES_ROOT=$(pwd -P)
-
-
-DEBUG=false
-HWENV="arch-macbook"
 
 setup_gitconfig() {
 	info 'setup gitconfig'
