@@ -23,6 +23,12 @@ source ${SETUP_SYMLINKS}
     assert_equal "${#lines[@]}" 12
 }
 
+@test "find_symlinks .envlink.config returns correct count" {
+    run find_symlinks ".envlink.config"
+    assert_equal "${#lines[@]}" 1
+}
+
+
 @test "backup_link_target_if_exists by source file and none existing target" {
     local src_file="${DOTFILES_ROOT}/src/src.txt"
     local target_dst="${DOTFILES_ROOT}/.config/target/src.txt"
@@ -100,6 +106,7 @@ source ${SETUP_SYMLINKS}
 }
 
 @test "symlink pathlinks" {
+    export HOME=/home/pathlink-tests
     run symlink_pathlinks
 
     assert_equal \
@@ -107,8 +114,48 @@ source ${SETUP_SYMLINKS}
        "$(find $HOME -type l -exec ls {} \; | grep ".pathlink" | wc -l)"
 
      while read pathlink ; do
-         assert_equal \
-             $(readlink  ${pathlink}) \
-             $(find $HOME -type l -name .$(basename "${pathlink%.*}") -exec readlink {} \;)
+
+        local linked_parent_dir="$(dirname ${pathlink})"
+        assert_equal \
+            "$(dirname ${pathlink})" \
+            "$(find $HOME -iname *${linked_parent_dir##*/} -exec readlink {} \;)"
      done < <(find_symlinks "pathlink")
+}
+
+@test "symlink envlinks fails on missing .envlink.config" {
+skip
+    export HWENV="arch-test"
+    export HOME="/home/test-missing-envlinks"
+    local test_dir="${DOTFILES_ROOT}/failing-envlink-test/${HWENV}"
+    local test_path="${test_dir}/.test.envlink"
+
+    mkdir -p ${test_dir}
+    touch "${test_path}"
+
+    run symlink_envlinks
+    rm -rf "${test_dir}"
+
+    (echo "${output}" | grep -q "Could not find .envlink.config in ${test_dir}" ) && found=true || found=false
+    assert_equal true ${found}
+
+}
+
+@test "symlink envlinks" {
+skip
+    export HOME="/home/test-envlinks"
+    run symlink_envlinks
+
+    while read envlink ; do
+
+        local linked="$(basename ${envlink})"
+        assert_equal \
+            ${envlink} \
+            "$(find $HOME -name *${linked%.*}* -exec readlink {} \;)"
+
+        assert_equal \
+            $(md5sum < ${envlink} | cut -d' ' -f1) \
+            "$(find $HOME -name *${linked%.*}* -exec md5sum {} \; | cut -d' ' -f1)"
+
+    done < <(find_symlinks "envlink")
+
 }

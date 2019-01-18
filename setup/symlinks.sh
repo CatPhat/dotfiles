@@ -17,6 +17,7 @@ function find_symlinks() {
 
 # takes the given source file and target path and backs up the existing target
 # if the target exists and is not a symlink of the source.
+# TODO: this should only target files and not directories
 function backup_link_target_if_exists() {
     local src="$1"
     local target="$2"
@@ -27,6 +28,9 @@ function backup_link_target_if_exists() {
     local target_parent_dir="$(dirname ${target})"
     local backup_target_dest="${backup_folder}/${backup_date}-${target_parent_dir##*/}-$(basename ${target})"
 
+    info "Checking if target needs to be backed up \n
+               src: ${src} \n
+            target: ${target}"
     if [[ -e ${target} ]]; then
         if [[ $(readlink ${target}) == ${src} ]]; then
             info 'link target matches source, ignoring.'
@@ -40,7 +44,7 @@ function backup_link_target_if_exists() {
             echo "${backup_date} - Moved ${target} to ${backup_target_dest}" >> ${backup_logfile}
         fi
     else
-        debug 'target does not exist, not backing up target.'
+        info "target does not exist, not backing up ${target}"
     fi
 }
 
@@ -65,7 +69,7 @@ function symlink_homelinks() {
 function symlink_pathlinks() {
     info "Linking pathlinks."
     while read file ; do
-        local desired_path=$(parse_config_pathlink_file "${file}")
+        local desired_path=$(parse_symlink_config_file "${file}")
         info ${desired_path}
         local src_parent_folder=$(dirname ${file})
         local dst="$desired_path/${src_parent_folder##*/}"
@@ -73,7 +77,7 @@ function symlink_pathlinks() {
         backup_link_target_if_exists "${src_parent_folder}" "${dst}"
 
         [[ -e $(dirname ${dst}) ]] \
-            || info "$(dirname ${dst}) does not exist, making folder." && mkdir --parents ${dst}
+            || info "$(dirname ${dst}) does not exist, making folder." && mkdir -p $(dirname ${dst})
 
         ln -sf "${src_parent_folder}" "${dst}" \
             && success "Successfully linked ${src_parent_folder} to ${dst}" \
@@ -83,8 +87,48 @@ function symlink_pathlinks() {
     info "Done linking pathlinks.\n"
 }
 
-# 'returns' and validates the output of a config.pathlink file
-function parse_config_pathlink_file() {
+function symlink_envlinks() {
+    info "Linking envlinks by ${HWENV}."
+    while read file ; do
+
+        debug ${file}
+        local src_parent_folder=$(dirname ${file})
+        debug ${src_parent_folder}
+        local envlink_config_file=$(find ${src_parent_folder} -name '.envlink.config')
+        debug ${envlink_config_file}
+
+#        if [[ ${file} =~ '*envlink.config' ]]; then
+#            fail "Skipping ${config_file}"
+#            continue
+#        fi
+
+        if [[ ! -e ${envlink_config_file} ]]; then
+            fail "Could not find .envlink.config in ${src_parent_folder}"
+            continue
+        else
+            info "Using .envlink.config found in ${src_parent_folder}"
+        fi
+
+        local file_basename=$(basename ${file})
+        local desired_path=$(parse_symlink_config_file "${envlink_config_file}")
+        local dst="$desired_path/.${file_basename%.*}"
+        backup_link_target_if_exists "${file}" "${dst}"
+
+        [[ -e ${desired_path} ]] \
+            || info "${desired_path} does not exist, making folder." && mkdir -p ${desired_path}
+
+        ln -sf "${file}" "${dst}" \
+            && success "Successfully linked ${file} to ${dst}" \
+            || fail "Could not link ${file} to ${dst}"
+
+    done < <(find_symlinks "envlink")
+    info "Done linking envlinks."
+
+}
+
+
+# 'returns' and validates the output of the provided file
+function parse_symlink_config_file() {
     local desired_path=$(. <(echo -e echo $(<$1)))
     if [[ $(wc -l <"$1") -eq 1 ]]; then
         echo "${desired_path}"
