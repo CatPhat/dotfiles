@@ -123,7 +123,6 @@ source ${SETUP_SYMLINKS}
 }
 
 @test "symlink envlinks fails on missing .envlink.config" {
-skip
     export HWENV="arch-test"
     export HOME="/home/test-missing-envlinks"
     local test_dir="${DOTFILES_ROOT}/failing-envlink-test/${HWENV}"
@@ -141,7 +140,6 @@ skip
 }
 
 @test "symlink envlinks" {
-skip
     export HOME="/home/test-envlinks"
     run symlink_envlinks
 
