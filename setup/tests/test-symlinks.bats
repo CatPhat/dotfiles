@@ -157,3 +157,14 @@ source ${SETUP_SYMLINKS}
     done < <(find_symlinks "envlink")
 
 }
+
+@test "backup_link_target_if_exists fails if target is directory" {
+    local src_dir="${DOTFILES_ROOT}"
+    local target_dir="${HOME}/backup-target-dir-fail-test"
+    mkdir -p ${target_dir}
+
+    run backup_link_target_if_exists "${src_dir}" "${target_dir}"
+    assert_equal "${status}" "1"
+}
+
+

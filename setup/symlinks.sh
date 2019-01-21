@@ -17,7 +17,6 @@ function find_symlinks() {
 
 # takes the given source file and target path and backs up the existing target
 # if the target exists and is not a symlink of the source.
-# TODO: this should only target files and not directories
 function backup_link_target_if_exists() {
     local src="$1"
     local target="$2"
@@ -31,7 +30,14 @@ function backup_link_target_if_exists() {
     info "Checking if target needs to be backed up \n
                src: ${src} \n
             target: ${target}"
+
     if [[ -e ${target} ]]; then
+
+        if [[ -d ${target} ]]; then
+            fail "Target is a directory, must be a file."
+            exit 1
+        fi
+
         if [[ $(readlink ${target}) == ${src} ]]; then
             info 'link target matches source, ignoring.'
         else
