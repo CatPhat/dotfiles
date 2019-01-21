@@ -24,7 +24,7 @@ source ${SETUP_SYMLINKS}
 }
 
 @test "find_symlinks .envlink.config returns correct count" {
-    run find_symlinks ".envlink.config"
+    run find_symlinks "envlink.config"
     assert_equal "${#lines[@]}" 1
 }
 
