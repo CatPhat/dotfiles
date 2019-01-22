@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
-#set -e
 
 source ./setup/common.sh
 source ./setup/config.sh
 
 cd $DOTFILES_ROOT
 
-debug "\$DOTFILES_ROOT: ${DOTFILES_ROOT}"
-info "Building Dockerfile"
-docker build --build-arg dotfiles_root=${DOTFILES_ROOT} -f ${DOTFILES_ROOT}/setup/tests/Dockerfile --tag bats/bats:latest .
+info "Building arch test image."
+docker build \
+    --tag catphat/dotfiles.arch \
+    --build-arg dotfiles_root=${DOTFILES_ROOT} \
+    -f ${DOTFILES_ROOT}/setup/tests/arch/Dockerfile \
+    .
 
-info "Running bats-core unit tests"
+info "Building bats test image."
+docker build \
+    --tag catphat/dotfiles.bats \
+    --build-arg dotfiles_root=${DOTFILES_ROOT} \
+    -f ${DOTFILES_ROOT}/setup/tests/bats/Dockerfile \
+    .
 
-docker run -it --rm -e DOTFILES_ROOT=${DOTFILES_ROOT} --workdir ${DOTFILES_ROOT} bats/bats:latest -t setup/tests
+info "Running Bats test image."
+docker run \
+    --rm \
+    -e DOTFILES_ROOT=${DOTFILES_ROOT} \
+    --workdir ${DOTFILES_ROOT} \
+    catphat/dotfiles.bats \
+    -t setup/tests
