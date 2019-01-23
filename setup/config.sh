@@ -2,4 +2,5 @@
 
 DOTFILES_ROOT=$(pwd -P)
 DEBUG=false
-HWENV="arch-macbook"
+HWENV="arch-whitebox"
+OSENV="arch"
