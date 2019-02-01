@@ -80,10 +80,14 @@ RUN zsh ${DOTFILES}/i3/.install.arch.sh
 COPY ./ffmpeg ${DOTFILES}/ffmpeg
 RUN zsh ${DOTFILES}/ffmpeg/.install.arch.sh
 
-
 # mpv
 COPY ./mpv ${DOTFILES}/mpv
 RUN zsh ${DOTFILES}/mpv/.install.arch.sh
+
+# nvim
+COPY ./nvim ${DOTFILES}/nvim
+RUN zsh ${DOTFILES}/nvim/.install.arch.sh
+
 
 
 

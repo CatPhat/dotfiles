@@ -6,7 +6,7 @@ source ${SETUP_INSTALL}
 
 @test "find_install_scripts exit status" {
     run find_install_scripts
-    assert_equal 14 "${#lines[@]}"
+    assert_equal 15 "${#lines[@]}"
 }
 
 @test "setup prequisites for OSENV arch install" {
@@ -30,6 +30,7 @@ source ${SETUP_INSTALL}
     assert_equal "/usr/sbin/i3" "$(command -v i3)"
     assert_equal "/usr/sbin/ffmpeg" "$(command -v ffmpeg)"
     assert_equal "/usr/sbin/mpv" "$(command -v mpv)"
+    assert_equal "/usr/sbin/nvim" "$(command -v nvim)"
 }
 
 # TODO: add tests for terminal, browser, etc..
