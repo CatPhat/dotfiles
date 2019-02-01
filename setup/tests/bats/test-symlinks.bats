@@ -28,7 +28,6 @@ source ${SETUP_SYMLINKS}
     assert_equal "${#lines[@]}" 1
 }
 
-
 @test "backup_link_target_if_exists by source file and none existing target" {
     local src_file="${DOTFILES_ROOT}/src/src.txt"
     local target_dst="${DOTFILES_ROOT}/.config/target/src.txt"
@@ -106,7 +105,6 @@ source ${SETUP_SYMLINKS}
 }
 
 @test "symlink pathlinks" {
-    export HOME=/home/pathlink-tests
     run symlink_pathlinks
 
     assert_equal \
@@ -118,13 +116,33 @@ source ${SETUP_SYMLINKS}
         local linked_parent_dir="$(dirname ${pathlink})"
         assert_equal \
             "$(dirname ${pathlink})" \
-            "$(find $HOME -iname *${linked_parent_dir##*/} -exec readlink {} \;)"
+            "$(find $HOME -iname *${linked_parent_dir##*/}  -not -path '*/'${dotfiles_basename}'/*' -exec readlink {} \;)"
      done < <(find_symlinks "pathlink")
+}
+
+@test "symlink envlinks" {
+    run symlink_envlinks
+
+	local dotfiles_basename=$(basename ${DOTFILES_ROOT})
+
+    while read envlink ; do
+
+        local linked="$(basename ${envlink})"
+        assert_equal \
+            ${envlink} \
+            "$(find $HOME -name *${linked%.*}* -not -path '*/'${dotfiles_basename}'/*' -exec readlink {} \;)"
+
+        assert_equal \
+            $(md5sum < ${envlink} | cut -d' ' -f1) \
+            "$(find $HOME -name *${linked%.*}* \
+            -not -path '*/'${dotfiles_basename}'/*' \
+            -exec md5sum {} \; | cut -d' ' -f1)"
+
+    done < <(find_symlinks "envlink")
 }
 
 @test "symlink envlinks fails on missing .envlink.config" {
     export HWENV="arch-test"
-    export HOME="/home/test-missing-envlinks"
     local test_dir="${DOTFILES_ROOT}/failing-envlink-test/${HWENV}"
     local test_path="${test_dir}/.test.envlink"
 
@@ -139,24 +157,6 @@ source ${SETUP_SYMLINKS}
 
 }
 
-@test "symlink envlinks" {
-    export HOME="/home/test-envlinks"
-    run symlink_envlinks
-
-    while read envlink ; do
-
-        local linked="$(basename ${envlink})"
-        assert_equal \
-            ${envlink} \
-            "$(find $HOME -name *${linked%.*}* -exec readlink {} \;)"
-
-        assert_equal \
-            $(md5sum < ${envlink} | cut -d' ' -f1) \
-            "$(find $HOME -name *${linked%.*}* -exec md5sum {} \; | cut -d' ' -f1)"
-
-    done < <(find_symlinks "envlink")
-
-}
 
 @test "backup_link_target_if_exists fails if target is directory" {
     local src_dir="${DOTFILES_ROOT}"

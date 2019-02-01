@@ -3,13 +3,9 @@
 BATS_DEBUG=true
 FORCE_DEBUG=false
 
-# Root directory of integration tests.
-INTEGRATION_ROOT=$(dirname "$(readlink -f "$BASH_SOURCE")")
-
-DOTFILES_REPO_ROOT=${CATPHAT_REPO_ROOT:-$(cd "$INTEGRATION_ROOT/../.."; pwd -P)}
-
-SETUP_SYMLINKS=${SETUP_SYMLINKS:-${DOTFILES_REPO_ROOT}/setup/symlinks.sh}
-SETUP_CONFIG=${SETUP_SYMLINKS:-${DOTFILES_REPO_ROOT}/setup/config.sh}
+SETUP_SYMLINKS="${DOTFILES_ROOT}/setup/symlinks.sh"
+SETUP_INSTALL="${DOTFILES_ROOT}/setup/install.sh"
+SETUP_CONFIG="${DOTFILES_ROOT}/setup/config.sh"
 
 debug_print() {
     printf "\e[35m\e[1m BATS-DEBUG\e[0m -> $1\n" >&3

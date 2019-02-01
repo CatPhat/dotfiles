@@ -1,0 +1,17 @@
+{
+  "setup": [
+    {
+      "environment": "arch-linux",
+      "required": [
+        {
+          "bin": "trizen",
+          "method": "pacman"
+        },
+        {
+          "2": "antibody update"
+        }
+      ]
+    }
+  ]
+}
+

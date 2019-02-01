@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source "${DOTFILES_ROOT}/setup/config.sh"
-source "${DOTFILES_ROOT}/setup/common.sh"
+source "${DOTFILES}/setup/config.sh"
+source "${DOTFILES}/setup/common.sh"
 
 # Find files with the specified symlink file type
 # Available symlink types: .symlink | .envlink | .pathlink
