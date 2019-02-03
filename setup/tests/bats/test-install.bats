@@ -6,7 +6,7 @@ source ${SETUP_INSTALL}
 
 @test "find_install_scripts exit status" {
     run find_install_scripts
-    assert_equal 15 "${#lines[@]}"
+    assert_equal 16 "${#lines[@]}"
 }
 
 @test "setup prequisites for OSENV arch install" {
