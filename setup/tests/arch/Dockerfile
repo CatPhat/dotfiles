@@ -88,16 +88,16 @@ RUN zsh ${DOTFILES}/mpv/.install.arch.sh
 COPY ./nvim ${DOTFILES}/nvim
 RUN zsh ${DOTFILES}/nvim/.install.arch.sh
 
-
-
+# oceanic-next-shell
+COPY ./oceanic-next-shell ${DOTFILES}/oceanic-next-shell
+RUN sudo chown -R ${USER}:${USER} ${HOME}
+RUN zsh ${DOTFILES}/oceanic-next-shell/.install.arch.sh
 
 
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
 COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
 COPY ./setup/tests/bats/test-install.bats ${DOTFILES}/setup/tests/bats/test-install.bats
-RUN sudo chown -R ${USER}:${USER} ${HOME}
-
 
 
 #CMD ["bash"]

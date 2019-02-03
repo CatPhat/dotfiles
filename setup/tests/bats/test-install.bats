@@ -65,3 +65,12 @@ EOF
     run go run /tmp/hello.go
     assert_equal 'Hello, Arch!' "${output}"
 }
+
+@test "validate base16 oceanic shell install" {
+    local expected_oceanic_source='source ${DOTFILES}/oceanic-next-shell/.source.zshrc.sh'
+
+    run echo $(grep -q "${expected_oceanic_source}" ${DOTFILES_ZSHRC} \
+        && echo "exists" || echo "does not exist")
+
+    assert_equal "exists" "${output}"
+}
