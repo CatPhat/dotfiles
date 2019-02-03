@@ -66,6 +66,7 @@ EOF
     assert_equal 'Hello, Arch!' "${output}"
 }
 
+# TODO: validate sourced file
 @test "validate base16 oceanic shell install" {
     local expected_oceanic_source='source ${DOTFILES}/oceanic-next-shell/.source.zshrc.sh'
 
