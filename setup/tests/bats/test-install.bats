@@ -6,7 +6,7 @@ source ${SETUP_INSTALL}
 
 @test "find_install_scripts exit status" {
     run find_install_scripts
-    assert_equal 20 "${#lines[@]}"
+    assert_equal 21 "${#lines[@]}"
 }
 
 @test "setup prequisites for OSENV arch install" {
@@ -35,6 +35,7 @@ source ${SETUP_INSTALL}
     assert_equal "/usr/sbin/termite" "$(command -v termite)"
     assert_equal "/usr/sbin/tmux" "$(command -v tmux)"
     assert_equal "/usr/sbin/zathura" "$(command -v zathura)"
+    assert_equal "/usr/sbin/rofi" "$(command -v rofi)"
 }
 
 # TODO: add tests for terminal, browser, etc..

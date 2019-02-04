@@ -117,6 +117,9 @@ RUN zsh ${DOTFILES}/tmux/.install.arch.sh
 COPY ./zathura ${DOTFILES}/zathura
 RUN zsh ${DOTFILES}/zathura/.install.arch.sh
 
+# rofi
+COPY ./rofi ${DOTFILES}/rofi
+RUN zsh ${DOTFILES}/rofi/.install.arch.sh
 
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
