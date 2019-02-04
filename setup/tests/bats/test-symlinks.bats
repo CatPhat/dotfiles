@@ -14,8 +14,13 @@ source ${SETUP_SYMLINKS}
 }
 
 @test "find_symlinks .envlink returns correct count" {
+    HWENV="arch-macbook"
     run find_symlinks "envlink"
     assert_equal 5 "${#lines[@]}"
+
+    HWENV="arch-whitebox"
+    run find_symlinks "envlink"
+    assert_equal 4 "${#lines[@]}"
 }
 
 @test "find_symlinks .pathlink returns correct count" {
@@ -25,7 +30,7 @@ source ${SETUP_SYMLINKS}
 
 @test "find_symlinks .envlink.config returns correct count" {
     run find_symlinks "envlink.config"
-    assert_equal 1 "${#lines[@]}"
+    assert_equal 2 "${#lines[@]}"
 }
 
 @test "backup_link_target_if_exists by source file and none existing target" {
