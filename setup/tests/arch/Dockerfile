@@ -113,6 +113,11 @@ RUN zsh ${DOTFILES}/termite/.install.arch.sh
 COPY ./tmux ${DOTFILES}/tmux
 RUN zsh ${DOTFILES}/tmux/.install.arch.sh
 
+# zathura
+COPY ./zathura ${DOTFILES}/zathura
+RUN zsh ${DOTFILES}/zathura/.install.arch.sh
+
+
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
 COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
