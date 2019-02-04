@@ -6,13 +6,14 @@ source "${DOTFILES}/setup/common.sh"
 # Find files with the specified symlink file type
 # Available symlink types: .symlink | .envlink | .pathlink
 function find_symlinks() {
-    local __symlink_file_type=$1
-#   local __result=()
+    local symlink_file_type=$1
     while IFS= read -d $'\0' -r file ; do
-#       __result=("${__result[@]}" "$file")
+        if [[ ${symlink_file_type} == "envlink" ]]; then
+            local envlink_dirname=$(dirname ${file})
+            [[ ${envlink_dirname##*/} == ${HWENV} ]] || continue
+        fi
         echo "$file"
-    done < <(find -H ${DOTFILES_ROOT} -name "*.$__symlink_file_type" -not -path '*.git*' -print0)
-#   echo "${__result[@]}"
+    done < <(find -H ${DOTFILES_ROOT} -name "*.$symlink_file_type" -not -path '*.git*' -print0)
 }
 
 # takes the given source file and target path and backs up the existing target
