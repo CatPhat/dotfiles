@@ -105,6 +105,10 @@ RUN zsh ${DOTFILES}/polybar/.install.arch.sh
 # TODO: Think about how to handle 'system' aliases
 #       e.g.: alias pbcopy="xclip -selection clipboard"
 
+# termite
+COPY ./termite ${DOTFILES}/termite
+RUN zsh ${DOTFILES}/termite/.install.arch.sh
+
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
 COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
