@@ -121,6 +121,10 @@ RUN zsh ${DOTFILES}/zathura/.install.arch.sh
 COPY ./rofi ${DOTFILES}/rofi
 RUN zsh ${DOTFILES}/rofi/.install.arch.sh
 
+# x
+# TODO: Doex x need an install script?
+COPY ./x ${DOTFILES}/x
+
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
 COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
