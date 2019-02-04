@@ -102,6 +102,8 @@ COPY ./polybar ${DOTFILES}/polybar
 RUN zsh ${DOTFILES}/polybar/.install.arch.sh
 
 # TODO: Think about how to install/configure ssh
+# TODO: Think about how to handle 'system' aliases
+#       e.g.: alias pbcopy="xclip -selection clipboard"
 
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
