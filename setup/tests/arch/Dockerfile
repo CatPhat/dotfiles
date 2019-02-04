@@ -93,6 +93,15 @@ COPY ./oceanic-next-shell ${DOTFILES}/oceanic-next-shell
 RUN sudo chown -R ${USER}:${USER} ${HOME}
 RUN zsh ${DOTFILES}/oceanic-next-shell/.install.arch.sh
 
+# TODO: DELETE ME
+RUN sudo reflector --verbose --latest 40 --number 10 --sort rate --protocol http --save /etc/pacman.d/mirrorlist
+RUN sudo pacman -Syu --needed --noconfirm
+
+# polybar
+COPY ./polybar ${DOTFILES}/polybar
+RUN zsh ${DOTFILES}/polybar/.install.arch.sh
+
+
 
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
