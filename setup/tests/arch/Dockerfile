@@ -125,6 +125,8 @@ RUN zsh ${DOTFILES}/rofi/.install.arch.sh
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
 COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
 COPY ./setup/tests/bats/test-install.bats ${DOTFILES}/setup/tests/bats/test-install.bats
+COPY ./setup/symlinks.sh ${DOTFILES}/setup/symlinks.sh
+COPY ./setup/tests/bats/test-symlinks.bats ${DOTFILES}/setup/tests/bats/test-symlinks.bats
 
 
 #CMD ["bash"]

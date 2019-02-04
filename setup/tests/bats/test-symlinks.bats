@@ -5,27 +5,27 @@ source ${SETUP_SYMLINKS}
 
 @test "find_symlinks exit status" {
     run find_symlinks "symlink"
-    assert_equal "$status" 0
+    assert_equal 0 "$status"
 }
 
 @test "find_symlinks .homelink returns correct count" {
     run find_symlinks "homelink"
-    assert_equal "${#lines[@]}" 4
+    assert_equal 4 "${#lines[@]}"
 }
 
 @test "find_symlinks .envlink returns correct count" {
     run find_symlinks "envlink"
-    assert_equal "${#lines[@]}" 5
+    assert_equal 5 "${#lines[@]}"
 }
 
 @test "find_symlinks .pathlink returns correct count" {
     run find_symlinks "pathlink"
-    assert_equal "${#lines[@]}" 12
+    assert_equal 12 "${#lines[@]}"
 }
 
 @test "find_symlinks .envlink.config returns correct count" {
     run find_symlinks "envlink.config"
-    assert_equal "${#lines[@]}" 1
+    assert_equal 1 "${#lines[@]}"
 }
 
 @test "backup_link_target_if_exists by source file and none existing target" {
@@ -37,7 +37,7 @@ source ${SETUP_SYMLINKS}
     run backup_link_target_if_exists ${src_file} ${target_dst}
 
     [[ -e ${DOTFILES_ROOT}/.backup ]] && backup_dir_exists=true || backup_dir_exists=false
-    assert_equal ${backup_dir_exists} false
+    assert_equal false ${backup_dir_exists}
 }
 
 @test "backup_link_target_if_exists by source file existing target" {
@@ -55,14 +55,14 @@ source ${SETUP_SYMLINKS}
     run backup_link_target_if_exists "${src_file}" "${target_file}"
 
     [[ -e ${backup_dir} ]] && backup_dir_exists=true || backup_dir_exists=false
-    assert_equal ${backup_dir_exists} true
+    assert_equal true ${backup_dir_exists}
 
     [[ -e ${target_file} ]] && existing_target_exists=true || existing_target_exists=false
-    assert_equal ${existing_target_exists} false
+    assert_equal false ${existing_target_exists}
 
-    assert_equal "$(find ${backup_dir} -exec echo \; | wc -l)" 3
+    assert_equal 3 "$(find ${backup_dir} -exec echo \; | wc -l)"
 
-    assert_equal "$(find ${backup_dir} -name '*src.txt' -exec cat {} \;)" "${random_string}"
+    assert_equal "${random_string}" "$(find ${backup_dir} -name '*src.txt' -exec cat {} \;)"
 
     rm -rf "${backup_dir}"
 }
@@ -82,12 +82,12 @@ source ${SETUP_SYMLINKS}
     run backup_link_target_if_exists "${src_file}" "${target_file}"
 
     [[ $(readlink ${target_file}) == ${src_file} ]] && valid_existing_symlink=true || valid_existing_symlink=false
-    assert_equal ${valid_existing_symlink} true
+    assert_equal true ${valid_existing_symlink}
 
     [[ -f ${target_file} ]] && existing_target_exists=true || existing_target_exists=false
-    assert_equal ${existing_target_exists} true
+    assert_equal true ${existing_target_exists}
 
-    assert_equal "$(cat ${target_file})" "${random_string}"
+    assert_equal "${random_string}" "$(cat ${target_file})"
 }
 
 @test "symlink homelinks" {
@@ -164,7 +164,7 @@ source ${SETUP_SYMLINKS}
     mkdir -p ${target_dir}
 
     run backup_link_target_if_exists "${src_dir}" "${target_dir}"
-    assert_equal "${status}" "1"
+    assert_equal "1" "${status}"
 }
 
 
