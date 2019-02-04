@@ -101,7 +101,7 @@ RUN sudo pacman -Syu --needed --noconfirm
 COPY ./polybar ${DOTFILES}/polybar
 RUN zsh ${DOTFILES}/polybar/.install.arch.sh
 
-
+# TODO: Think about how to install/configure ssh
 
 #Setup and associated BAT tests
 COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
