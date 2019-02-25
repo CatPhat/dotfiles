@@ -1,0 +1,6 @@
+#!/bin/sh
+
+feh --bg-fill \
+    "${HOME}/media/wallpapers/horizontal/by_localservers2_2560.jpg" \
+    "${HOME}/media/wallpapers/vertical/by_warmachines8_1920.jpg" \
+    "${HOME}/media/wallpapers/vertical/by_renderfarm_1920.jpg"

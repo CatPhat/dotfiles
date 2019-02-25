@@ -1,58 +1,137 @@
-FROM base/archlinux
+FROM archlinux/base
 MAINTAINER Kian Movasagi
 
-RUN pacman --noconfirm -Syu
-RUN pacman --noconfirm -S coreutils sudo systemd
+ARG dotfiles_root
+ARG host_user
+ENV DOTFILES=${dotfiles_root}
+ENV USER=${host_user}
+ENV HOME /home/${USER}
 
-#pyyaml & libyaml deps
-#RUN pacman --noconfirm -S python2 stow base-devel git libyaml python-yaml
+ENV LANG=en_US.UTF-8
+RUN pacman -Syu --needed --noconfirm sudo
 
-RUN useradd -m tester
-RUN echo "tester   ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers
+RUN useradd -m ${USER}
+RUN echo "${USER}   ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers
+USER ${USER}
 
-USER tester
-ENV HOME /home/tester
-ENV USER tester
-RUN pwd
-WORKDIR /home/tester/setup
+# Dotfile setup prequisites
+COPY ./setup/setup_prequisites.arch.sh ${DOTFILES}/setup/setup_prequisites.arch.sh
+RUN bash ${DOTFILES}/setup/setup_prequisites.arch.sh
 
-ADD ./temp/arch-bootstrap.sh /home/tester/setup/arch-bootstrap.sh
-RUN ./arch-bootstrap.sh
+# Git
+COPY ./git ${DOTFILES}/git
+RUN bash ${DOTFILES}/git/.install.arch.sh
 
-#RUN sudo pacman --noconfirm -Sy i3-gaps
-#RUN sudo pacman --noconfirm -Sy rofi
-#RUN sudo pacman --noconfirm -Sy compton
-#RUN sudo pacman --noconfirm -Sy termite
-#RUN sudo pacman --noconfirm -Sy tmux
-#RUN sudo pacman --noconfirm -Sy ranger
-#RUN sudo pacman --noconfirm -Sy stow
-#RUN sudo pacman --noconfirm -Sy zathura
-#RUN sudo pacman --noconfirm -Sy fish
-#RUN sudo pacman --noconfirm -Sy neovim
+# BATS-Core unit tests
+RUN git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
 
-#RUN mkdir /home/tester/dotfiles
-#ADD ./temp/.config /home/tester/dotfiles/.config
-#ADD ./temp/fabfile.py /home/tester/setup/fabfile.py
-#ADD ./temp/utilities.py /home/tester/setup/utilities.py
-#ADD ./temp/dependencies.yaml /home/tester/setup/dependencies.yaml
-#RUN sudo chown -R tester:tester /home/tester
+# Trizen
+COPY ./trizen ${DOTFILES}/trizen
+RUN bash ${DOTFILES}/trizen/.install.arch.sh
 
-#RUN sudo pacman --noconfirm -Sy xorg-server-xephyr
-#RUN Xephyr :0 -ac -br -screen 1024x768 -resizeable -reset -terminate
+# ZSH
+COPY ./zsh ${DOTFILES}/zsh
+RUN bash ${DOTFILES}/zsh/.install.arch.sh
 
-#RUN fab install_environment
-#RUN fab install_environment_config
-CMD ["/bin/bash"]
+# Antibody
+COPY ./antibody ${DOTFILES}/antibody
+RUN zsh ${DOTFILES}/antibody/.install.arch.sh
 
-# configure ssh
-# RUN sudo pacman -Sqyu --noconfirm --needed openssh && \
-#    sudo systemctl enable sshd
-#RUN sudo sed -i \
-#        -e 's/^#*\(PermitRootLogin\) .*/\1 yes/' \
-#        -e 's/^#*\(PasswordAuthentication\) .*/\1 yes/' \
-#        -e 's/^#*\(PermitEmptyPasswords\) .*/\1 yes/' \
-#        -e 's/^#*\(UsePAM\) .*/\1 no/' \
-#        /etc/ssh/sshd_config
-#EXPOSE 22
-#CMD ["/usr/bin/init"]
-#RUN /usr/bin/sshd -D
+# Compton
+COPY ./compton ${DOTFILES}/compton
+RUN zsh ${DOTFILES}/compton/.install.arch.sh
+
+# Docker
+COPY ./docker ${DOTFILES}/docker
+RUN zsh ${DOTFILES}/docker/.install.arch.sh
+
+# Feh
+COPY ./feh ${DOTFILES}/feh
+RUN zsh ${DOTFILES}/feh/.install.arch.sh
+
+# Fonts
+COPY ./fonts ${DOTFILES}/fonts
+RUN zsh ${DOTFILES}/fonts/.install.arch.sh
+
+# Fzf
+COPY ./fzf ${DOTFILES}/fzf
+RUN zsh ${DOTFILES}/fzf/.install.arch.sh
+
+#TODO: move to top
+COPY ./setup/common.sh ${DOTFILES}/setup/common.sh
+COPY ./setup/config.sh ${DOTFILES}/setup/config.sh
+RUN sudo chown -R ${USER}:${USER} ${HOME}
+
+# Go
+COPY ./golang ${DOTFILES}/golang
+RUN zsh ${DOTFILES}/golang/.install.arch.sh
+
+# gtk-3.0
+COPY ./gtk-3.0 ${DOTFILES}/gtk-3.0
+RUN zsh ${DOTFILES}/gtk-3.0/.install.arch.sh
+
+# i3
+COPY ./i3 ${DOTFILES}/i3
+RUN zsh ${DOTFILES}/i3/.install.arch.sh
+
+# ffmpeg
+# TODO: set FULL_FFMPEG_NVENC via setup/config
+#       add question at initializaton.
+COPY ./ffmpeg ${DOTFILES}/ffmpeg
+RUN zsh ${DOTFILES}/ffmpeg/.install.arch.sh
+
+# mpv
+COPY ./mpv ${DOTFILES}/mpv
+RUN zsh ${DOTFILES}/mpv/.install.arch.sh
+
+# nvim
+COPY ./nvim ${DOTFILES}/nvim
+RUN zsh ${DOTFILES}/nvim/.install.arch.sh
+
+# oceanic-next-shell
+COPY ./oceanic-next-shell ${DOTFILES}/oceanic-next-shell
+RUN sudo chown -R ${USER}:${USER} ${HOME}
+RUN zsh ${DOTFILES}/oceanic-next-shell/.install.arch.sh
+
+# TODO: DELETE ME
+RUN sudo reflector --verbose --latest 40 --number 10 --sort rate --protocol http --save /etc/pacman.d/mirrorlist
+RUN sudo pacman -Syu --needed --noconfirm
+
+# polybar
+COPY ./polybar ${DOTFILES}/polybar
+RUN zsh ${DOTFILES}/polybar/.install.arch.sh
+
+# TODO: Think about how to install/configure ssh
+# TODO: Think about how to handle 'system' aliases
+#       e.g.: alias pbcopy="xclip -selection clipboard"
+
+# termite
+COPY ./termite ${DOTFILES}/termite
+RUN zsh ${DOTFILES}/termite/.install.arch.sh
+
+# tmux
+COPY ./tmux ${DOTFILES}/tmux
+RUN zsh ${DOTFILES}/tmux/.install.arch.sh
+
+# zathura
+COPY ./zathura ${DOTFILES}/zathura
+RUN zsh ${DOTFILES}/zathura/.install.arch.sh
+
+# rofi
+COPY ./rofi ${DOTFILES}/rofi
+RUN zsh ${DOTFILES}/rofi/.install.arch.sh
+
+# x
+# TODO: Doex x need an install script?
+COPY ./x ${DOTFILES}/x
+
+#Setup and associated BAT tests
+COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
+COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
+COPY ./setup/tests/bats/test-install.bats ${DOTFILES}/setup/tests/bats/test-install.bats
+COPY ./setup/symlinks.sh ${DOTFILES}/setup/symlinks.sh
+COPY ./setup/tests/bats/test-symlinks.bats ${DOTFILES}/setup/tests/bats/test-symlinks.bats
+
+
+#CMD ["bash"]
+ENTRYPOINT ["zsh", "/tmp/bats-core/bin/bats"]
