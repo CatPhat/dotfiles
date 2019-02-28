@@ -3,19 +3,6 @@
 source "${DOTFILES}/setup/config.sh"
 source "${DOTFILES}/setup/common.sh"
 
-# Find files with the specified symlink file type
-# Available symlink types: .symlink | .envlink | .pathlink
-function find_symlinks() {
-    local symlink_file_type=$1
-    while IFS= read -d $'\0' -r file ; do
-        if [[ ${symlink_file_type} == "envlink" ]]; then
-            local envlink_dirname=$(dirname ${file})
-            [[ ${envlink_dirname##*/} == ${HWENV} ]] || continue
-        fi
-        echo "$file"
-    done < <(find -H ${DOTFILES_ROOT} -name "*.$symlink_file_type" -not -path '*.git*' -print0)
-}
-
 # takes the given source file and target path and backs up the existing target
 # if the target exists and is not a symlink of the source.
 function backup_link_target_if_exists() {
@@ -34,10 +21,10 @@ function backup_link_target_if_exists() {
 
     if [[ -e ${target} ]]; then
 
-        if [[ -d ${target} ]]; then
-            fail "Target is a directory, must be a file."
-            exit 1
-        fi
+#        if [[ -d ${target} ]]; then
+#            fail "Target is a directory, must be a file."
+#            exit 1
+#        fi
 
         if [[ $(readlink ${target}) == ${src} ]]; then
             info 'link target matches source, ignoring.'
@@ -55,93 +42,98 @@ function backup_link_target_if_exists() {
     fi
 }
 
-function symlink_homelinks() {
-    info "linking homelinks"
-    while read file ; do
-		local dst="$HOME/.$(basename "${file%.*}")"
-        backup_link_target_if_exists "${file}" "${dst}"
-        ln -sf "${file}" "${dst}"
-        success "Successfully linked ${file} to ${dst}"
-    done < <(find_symlinks "homelink")
-    info "Done linking homelinks\n"
+function symlink_dotlinks() {
+    info "Linking dotlinks."
+    while read -r file ; do
+        symlink_dotlink "$file"
+    done < <(find_symlinks "dotlink")
+    info "Done linking dotlinks.\n"
 }
 
-# If a directory contains 'config.pathlink' then this will symlink
-# the parent folder name to the desired root folder specified in
-# the respective 'config.pathlink' file.
-# e.g.:
-#       > cat ~/.dotfiles/compton/config.pathlink
-#       "$HOME/.config"
-#       > full_symlink_target_path=$("$HOME/.config/compton")
-function symlink_pathlinks() {
-    info "Linking pathlinks."
-    while read file ; do
-        local desired_path=$(parse_symlink_config_file "${file}")
-        info ${desired_path}
-        local src_parent_folder=$(dirname ${file})
-        local dst="$desired_path/${src_parent_folder##*/}"
+function symlink_dotlink(){
+    # e.g. $DOTFILES/tmux
+    # which contains files of type *.dotlink
+    local src_dir=$1
+    # e.g. $HOME/.config/tmux
+    local desired_dst=$2
 
-        backup_link_target_if_exists "${src_parent_folder}" "${dst}"
+    # target is existing directory
+    # symlink contents of source directory into target
+    if [[ -d "${desired_dst}" ]]; then
 
-        [[ -e $(dirname ${dst}) ]] \
-            || info "$(dirname ${dst}) does not exist, making folder." && mkdir -p $(dirname ${dst})
+        while read -r file ; do
+    
+            local src_dotlink_file=${file}
+            local src_dotlink_file_name_only=${src_dotlink_file##*/}
+            local dst_dotlink_file=${desired_dst}'/'${src_dotlink_file_name_only}
 
-        ln -sf "${src_parent_folder}" "${dst}" \
-            && success "Successfully linked ${src_parent_folder} to ${dst}" \
-            || fail "Could not link ${src_parent_folder} to ${dst}"
+            backup_link_target_if_exists "${src_dotlink_file}" "${dst_dotlink_file}"
+    
+            # local dst_dotlink_file_parent_dir
+            # dst_dotlink_file_parent_dir="$(dirname "${dst_dotlink_file}")"
+            # [[ -e ${dst_dotlink_file_parent_dir} ]] \
+            #     || info "${dst_dotlink_file_parent_dir} does not exist, making folder." && mkdir -p "${dst_dotlink_file_parent_dir}"
+    
+            if (ln -sf "${src_dotlink_file}" "${dst_dotlink_file}"); then
+                success "Successfully linked ${src_dotlink_file} to ${dst_dotlink_file}"
+            else
+                fail "Could not link ${src_dotlink_file} to ${dst_dotlink_file}"
+                return 1
+            fi
+        done < <(find_dotlink_files "${src_dir}")
 
-    done < <(find_symlinks "pathlink")
-    info "Done linking pathlinks.\n"
-}
+    # target does not exist
+    # symlink source directory to target directory
+    elif [[ ! -e "${desired_dst}" ]]; then
 
-function symlink_envlinks() {
-    info "Linking envlinks by ${HWENV}."
-    while read file ; do
-
-        debug ${file}
-        local src_parent_folder=$(dirname ${file})
-        debug ${src_parent_folder}
-        local envlink_config_file=$(find ${src_parent_folder} -name '.envlink.config')
-        debug ${envlink_config_file}
-
-#        if [[ ${file} =~ '*envlink.config' ]]; then
-#            fail "Skipping ${config_file}"
-#            continue
-#        fi
-
-        if [[ ! -e ${envlink_config_file} ]]; then
-            fail "Could not find .envlink.config in ${src_parent_folder}"
-            continue
+        if (ln -sf "${src_dir}" "${desired_dst}"); then
+            success "Successfully linked ${src_dir} to ${desired_dst}"
         else
-            info "Using .envlink.config found in ${src_parent_folder}"
+            fail "Could not link ${src_dir} to ${desired_dst}"
+            return 1
         fi
 
-        local file_basename=$(basename ${file})
-        local desired_path=$(parse_symlink_config_file "${envlink_config_file}")
-        local dst="$desired_path/.${file_basename%.*}"
-        backup_link_target_if_exists "${file}" "${dst}"
+    # Unexpected case
+    else
 
-        [[ -e ${desired_path} ]] \
-            || info "${desired_path} does not exist, making folder." && mkdir -p ${desired_path}
-
-        ln -sf "${file}" "${dst}" \
-            && success "Successfully linked ${file} to ${dst}" \
-            || fail "Could not link ${file} to ${dst}"
-
-    done < <(find_symlinks "envlink")
-    info "Done linking envlinks."
+        fail "Something went wrong while linking ${src_dir} to ${desired_dst}."
+        return 1
+    fi
 
 }
 
+function validate_dotlink(){
+    # e.g. $DOTFILES/tmux
+    # which contains files of type *.dotlink
+    local src_dir=$1
+    # e.g. $HOME/.config
+    local desired_dst=$2
 
-# 'returns' and validates the output of the provided file
-function parse_symlink_config_file() {
-    local desired_path=$(. <(echo -e echo $(<$1)))
-    if [[ $(wc -l <"$1") -eq 1 ]]; then
-        echo "${desired_path}"
-    else
-        fail "Invalid number of lines in $1 \n \
-        Should be only 1 line with a full path to the desired symlink location.\n \
-        e.g.: \"\$HOME/.config\""
-    fi
+    while read -r file ; do
+        local src_dotlink_file=${file}
+        local src_dotlink_file_name_only=${src_dotlink_file##*/}
+
+        local dst_dotlink_file=${desired_dst}'/'${src_dotlink_file_name_only}
+        local dst_dotlink_file_parent_dir
+        dst_dotlink_file_parent_dir="$(dirname "${dst_dotlink_file}")"
+
+
+        if [[ $(readlink -f "${dst_dotlink_file}") == "${src_dotlink_file}" ]]; then
+            if $DEBUG; then
+                success "${src_dotlink_file} and ${dst_dotlink_file} are symlinked"
+            fi
+        else
+            if $DEBUG; then
+                fail "${src_dotlink_file} and ${dst_dotlink_file} are not valid symlinks"
+            fi
+            return 1
+        fi
+    done < <(find_dotlink_files "${src_dir}")
+
+    return 0
+}
+
+function find_dotlink_files() {
+    local dir="$1"
+    find "${dir}"  -maxdepth 1 ! -name '._*'
 }

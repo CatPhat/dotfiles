@@ -3,12 +3,12 @@
 BATS_DEBUG=true
 FORCE_DEBUG=false
 
-SETUP_SYMLINKS="${DOTFILES_ROOT}/setup/symlinks.sh"
-SETUP_INSTALL="${DOTFILES_ROOT}/setup/install.sh"
-SETUP_CONFIG="${DOTFILES_ROOT}/setup/config.sh"
+SETUP_SYMLINKS="${DOTFILES_ROOT}/setup/common/symlinks.sh"
+SETUP_INSTALL="${DOTFILES_ROOT}/setup/common/install.sh"
+SETUP_CONFIG="${DOTFILES_ROOT}/setup/common/config.sh"
 
 debug_print() {
-    printf "\e[35m\e[1m BATS-DEBUG\e[0m -> $1\n" >&3
+    printf "\e[35m\e[1m BATS-DEBUG\e[0m -> %s\n" "$1" >&3
 }
 
 function teardown() {

@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
 DOTFILES=$(pwd -P)
-source ./setup/common.sh
-source ./setup/config.sh
-
-cd $DOTFILES_ROOT
+source "${DOTFILES}/setup/common.sh"
+source "${DOTFILES}/setup/config.sh"
 
 info "Building arch test image."
 docker build \
     --tag catphat/dotfiles.arch \
-    --build-arg dotfiles_root=${DOTFILES_ROOT} \
+    --build-arg dotfiles_root=${DOTFILES} \
     --build-arg host_user=${USER} \
-    -f ${DOTFILES_ROOT}/setup/tests/arch/Dockerfile \
+    -f ${DOTFILES}/setup/tests/arch/Dockerfile \
     .
 
 if [[ $? == 0 ]]; then
@@ -19,9 +17,9 @@ if [[ $? == 0 ]]; then
     info "Running arch test image."
     docker run \
            --rm \
-           -e DOTFILES_ROOT=${DOTFILES_ROOT} \
+           -e DOTFILES_ROOT=${DOTFILES} \
            -e host_user=${USER} \
-           --workdir ${DOTFILES_ROOT} \
+           --workdir ${DOTFILES} \
            --interactive --tty \
            catphat/dotfiles.arch \
            -t setup/tests/bats

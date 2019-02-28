@@ -10,128 +10,134 @@ ENV HOME /home/${USER}
 ENV LANG=en_US.UTF-8
 RUN pacman -Syu --needed --noconfirm sudo
 
-RUN useradd -m ${USER}
-RUN echo "${USER}   ALL=(ALL:ALL) NOPASSWD: ALL" > /etc/sudoers
+RUN sed 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers > /etc/sudoers.new
+RUN bash -c "export EDITOR='cp /etc/sudoers.new'; visudo"
+RUN rm /etc/sudoers.new
+RUN useradd -m -g users -G wheel -s /bin/bash ${USER} \
+    && chown -R ${USER} /home/${USER}
 USER ${USER}
 
-# Dotfile setup prequisites
-COPY ./setup/setup_prequisites.arch.sh ${DOTFILES}/setup/setup_prequisites.arch.sh
-RUN bash ${DOTFILES}/setup/setup_prequisites.arch.sh
+COPY ./setup/config.sh ${DOTFILES}/setup/
+COPY ./setup/dependencies.sh ${DOTFILES}/setup/
+COPY ./setup/dependencies.arch.sh ${DOTFILES}/setup/
+RUN bash -c "${DOTFILES}/setup/dependencies.sh"
+#RUN sudo chown -R ${USER} ${DOTFILES}
 
-# Git
+#
+#
+## Git
 COPY ./git ${DOTFILES}/git
-RUN bash ${DOTFILES}/git/.install.arch.sh
-
-# BATS-Core unit tests
-RUN git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
-
-# Trizen
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup git"
+#
+## Trizen
 COPY ./trizen ${DOTFILES}/trizen
-RUN bash ${DOTFILES}/trizen/.install.arch.sh
-
-# ZSH
-COPY ./zsh ${DOTFILES}/zsh
-RUN bash ${DOTFILES}/zsh/.install.arch.sh
-
-# Antibody
-COPY ./antibody ${DOTFILES}/antibody
-RUN zsh ${DOTFILES}/antibody/.install.arch.sh
-
-# Compton
-COPY ./compton ${DOTFILES}/compton
-RUN zsh ${DOTFILES}/compton/.install.arch.sh
-
-# Docker
-COPY ./docker ${DOTFILES}/docker
-RUN zsh ${DOTFILES}/docker/.install.arch.sh
-
-# Feh
-COPY ./feh ${DOTFILES}/feh
-RUN zsh ${DOTFILES}/feh/.install.arch.sh
-
-# Fonts
-COPY ./fonts ${DOTFILES}/fonts
-RUN zsh ${DOTFILES}/fonts/.install.arch.sh
-
-# Fzf
-COPY ./fzf ${DOTFILES}/fzf
-RUN zsh ${DOTFILES}/fzf/.install.arch.sh
-
-#TODO: move to top
-COPY ./setup/common.sh ${DOTFILES}/setup/common.sh
-COPY ./setup/config.sh ${DOTFILES}/setup/config.sh
-RUN sudo chown -R ${USER}:${USER} ${HOME}
-
-# Go
-COPY ./golang ${DOTFILES}/golang
-RUN zsh ${DOTFILES}/golang/.install.arch.sh
-
-# gtk-3.0
-COPY ./gtk-3.0 ${DOTFILES}/gtk-3.0
-RUN zsh ${DOTFILES}/gtk-3.0/.install.arch.sh
-
-# i3
-COPY ./i3 ${DOTFILES}/i3
-RUN zsh ${DOTFILES}/i3/.install.arch.sh
-
-# ffmpeg
-# TODO: set FULL_FFMPEG_NVENC via setup/config
-#       add question at initializaton.
-COPY ./ffmpeg ${DOTFILES}/ffmpeg
-RUN zsh ${DOTFILES}/ffmpeg/.install.arch.sh
-
-# mpv
-COPY ./mpv ${DOTFILES}/mpv
-RUN zsh ${DOTFILES}/mpv/.install.arch.sh
-
-# nvim
-COPY ./nvim ${DOTFILES}/nvim
-RUN zsh ${DOTFILES}/nvim/.install.arch.sh
-
-# oceanic-next-shell
-COPY ./oceanic-next-shell ${DOTFILES}/oceanic-next-shell
-RUN sudo chown -R ${USER}:${USER} ${HOME}
-RUN zsh ${DOTFILES}/oceanic-next-shell/.install.arch.sh
-
-# TODO: DELETE ME
-RUN sudo reflector --verbose --latest 40 --number 10 --sort rate --protocol http --save /etc/pacman.d/mirrorlist
-RUN sudo pacman -Syu --needed --noconfirm
-
-# polybar
-COPY ./polybar ${DOTFILES}/polybar
-RUN zsh ${DOTFILES}/polybar/.install.arch.sh
-
-# TODO: Think about how to install/configure ssh
-# TODO: Think about how to handle 'system' aliases
-#       e.g.: alias pbcopy="xclip -selection clipboard"
-
-# termite
-COPY ./termite ${DOTFILES}/termite
-RUN zsh ${DOTFILES}/termite/.install.arch.sh
-
-# tmux
-COPY ./tmux ${DOTFILES}/tmux
-RUN zsh ${DOTFILES}/tmux/.install.arch.sh
-
-# zathura
-COPY ./zathura ${DOTFILES}/zathura
-RUN zsh ${DOTFILES}/zathura/.install.arch.sh
-
-# rofi
-COPY ./rofi ${DOTFILES}/rofi
-RUN zsh ${DOTFILES}/rofi/.install.arch.sh
-
-# x
-# TODO: Doex x need an install script?
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup trizen"
+#
+## x
+## TODO: Does x need an install script?
 COPY ./x ${DOTFILES}/x
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup x"
+#
+## ZSH
+COPY ./zsh ${DOTFILES}/zsh
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup zsh"
+#
+## Antibody
+COPY ./antibody ${DOTFILES}/antibody
+#RUN sudo chown -R ${USER}:${USER} ${HOME}
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup antibody"
+#
+## x
+## TODO: Does x need an install script?
+COPY ./x ${DOTFILES}/x
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup x"
+#
+## Compton
+COPY ./compton ${DOTFILES}/compton
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup compton"
+#
+## Docker
+COPY ./docker ${DOTFILES}/docker
+##RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup docker"
+#
+## ffmpeg
+## TODO: set FULL_FFMPEG_NVENC via setup/config
+##       add question at initializaton.
+COPY ./ffmpeg ${DOTFILES}/ffmpeg
+##RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup ffmpeg"
+#
+## Fonts
+COPY ./fonts ${DOTFILES}/fonts
+##RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup fonts"
+#
+## Fzf
+COPY ./fzf ${DOTFILES}/fzf
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup fzf"
+#
+## Go
+COPY ./golang ${DOTFILES}/golang
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup golang"
+#
+## gtk-3.0
+COPY ./gtk-3.0 ${DOTFILES}/gtk-3.0
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup gtk-3.0"
+#
+## i3
+COPY ./i3 ${DOTFILES}/i3
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup i3"
+#
+## mpv
+COPY ./mpv ${DOTFILES}/mpv
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup mpv"
+#
+## nvim
+COPY ./nvim ${DOTFILES}/nvim
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup nvim"
+#
+## oceanic-next-shell
+COPY ./oceanic-next-shell ${DOTFILES}/oceanic-next-shell
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup oceanic-next-shell"
+#
+## polybar
+COPY ./polybar ${DOTFILES}/polybar
+##RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup polybar"
+#
+## rofi
+COPY ./rofi ${DOTFILES}/rofi
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup rofi"
+#
+## TODO: Think about how to install/configure ssh
+## TODO: Think about how to handle 'system' aliases
+##       e.g.: alias pbcopy="xclip -selection clipboard"
+## termite
+COPY ./termite ${DOTFILES}/termite
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup termite"
+#
+## tmux
+COPY ./tmux ${DOTFILES}/tmux
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup tmux"
+#
+## zathura
+COPY ./zathura ${DOTFILES}/zathura
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup zathura"
+#
+## Feh
+COPY ./feh ${DOTFILES}/feh
+#RUN bash -c "source ${DOTFILES}/setup/setup_dotfile.sh; setup feh"
+#
+## BATS-Core unit tests
+#RUN git clone https://github.com/bats-core/bats-core.git /tmp/bats-core
+#
+## Bats tests
+#COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
+#COPY ./setup/tests/bats/test-setup.bats ${DOTFILES}/setup/tests/bats/test-setup.bats
+#
+#COPY ./setup/symlinks.sh ${DOTFILES}/setup/symlinks.sh
+#COPY ./setup/tests/bats/test-symlinks.bats ${DOTFILES}/setup/tests/bats/test-symlinks.bats
 
-#Setup and associated BAT tests
-COPY ./setup/install.sh ${DOTFILES}/setup/install.sh
-COPY ./setup/tests/bats/helpers.bash ${DOTFILES}/setup/tests/bats/helpers.bash
-COPY ./setup/tests/bats/test-install.bats ${DOTFILES}/setup/tests/bats/test-install.bats
-COPY ./setup/symlinks.sh ${DOTFILES}/setup/symlinks.sh
-COPY ./setup/tests/bats/test-symlinks.bats ${DOTFILES}/setup/tests/bats/test-symlinks.bats
+COPY ./Makefile ${DOTFILES}/
+COPY ./setup/common.sh ${DOTFILES}/setup/
+COPY ./setup/status.sh ${DOTFILES}/setup/
+RUN bash -c "cd ${DOTFILES}; make status"
 
-
-#CMD ["bash"]
-ENTRYPOINT ["zsh", "/tmp/bats-core/bin/bats"]
+ENTRYPOINT ["bash", "/tmp/bats-core/bin/bats"]
