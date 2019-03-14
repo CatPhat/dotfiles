@@ -1,2 +1,0 @@
-^\.\_.*     # dotfile setup files, e.g. ._setup.arch.sh
-^/setup
