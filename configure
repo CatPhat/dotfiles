@@ -1,0 +1,74 @@
+#!/bin/sh
+
+#TODO: debug
+debugsym=true
+
+full_ffmpeg_nvenc=false
+osenv=''
+hwenv=''
+gopath="$HOME/dev/go"
+
+for arg in "$@"; do
+    case "$arg" in
+
+    --osenv=*)
+        osenv=$(echo "$arg" | sed 's/--osenv=//')
+        ;;
+
+    --hwenv=*)
+        hwenv=$(echo "$arg" | sed 's/--hwenv=//')
+        ;;
+
+    --gopath=*)
+        gopath=$(echo "$arg" | sed 's/--gopath=//')
+        ;;
+
+
+    --enable-debug)
+        debugsym=true;;
+
+    --disable-debug)
+        debugsym=false;;
+
+    --enable-full-ffmpeg-nvenc)
+        full_ffmpeg_nvenc=true;;
+
+    --disable-full-ffmpeg-nvenc)
+        full_ffmpeg_nvenc=false;;
+
+
+    --help)
+        echo 'usage: ./configure [options]'
+        echo 'options:'
+        echo '  --enable-debug: include debug symbols'
+        echo '  --disable-debug: do not include debug symbols'
+        echo '  --osenv=<OS>: [REQUIRED] operating system, arch, osx, ubuntu, smartos'
+        echo '  --hwenv=<HW>: hardware specific, whitebox (desktop), macbook (laptop), abox (old-desktop)'
+        echo "  --gopath=<PATH>: Golang environment variable \$GOPATH, default $gopath"
+        echo '  --enable-full-ffmpeg-nvenc: compile ffmpeg with all available libraries for nvenc'
+        echo '  --disable-full-ffmpeg-nvenc: compile basic ffmpeg package'
+        echo 'all invalid options are silently ignored'
+        exit 0
+        ;;
+    esac
+done
+
+if [ -z "${osenv}" ]; then
+    echo "--osenv=<OS> is required, see --help for more instructions."
+    exit 1
+fi
+
+echo 'generating makefile ...'
+{   echo "OSENV = $osenv"; 
+    echo "HWENV = $hwenv";
+    echo "GOPATH = $gopath";
+    echo "FULL_FFMPEG_NVENC = $full_ffmpeg_nvenc";
+    echo "DOTFILES = $(pwd -P)"; 
+} >>Makefile
+
+if $debugsym; then
+    echo 'dbg = -g' >>Makefile
+fi
+
+cat Makefile.in >>Makefile
+echo 'configuration complete, type make to build.'

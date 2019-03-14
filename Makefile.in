@@ -1,0 +1,321 @@
+#gnu makefile
+
+
+.DEFAULT_GOAL := help
+
+install-all-arch: antibody compton docker feh ffmpeg fzf git golang \
+i3 mpv nvim oceanic-next-shell polybar rofi termite tmux zathura \
+zsh	x
+
+help: 
+	echo "Usage: ..."
+		
+
+#### Helpers
+
+## variables & env exports
+DOTFILES 		:=	$(shell pwd)
+ENV_DOTFILES	:=	$(DOTFILES)
+ENV_GOPATH 		:= 	$(GOPATH)
+MAKE_ENV 		+= 	ENV_GOPATH ENV_DOTFILES
+SHELL_EXPORT 	:= 	$(foreach v,$(MAKE_ENV),$(v)='$($(v))' )
+ZSHRCD_FILES 	:= 	$(shell find ./zshrc.d -name *.zshrc)
+XINITRCD_FILES 	:= 	$(shell find ./x/$(OSENV)-$(HWENV)/xinitrc.d -name *.xinitrc -print0 | sort -z)
+ARCH_PM_FLAGS 	= 	--noconfirm --needed
+MAKE_DATE_TIME 	=	$(shell date +"%Y_%m_%d_%I_%M_%p")
+OS_HW_ENV		=	$(OSENV)-$(HWENV)
+
+## Makefile helpers
+
+# LINK_AND_BACKUP_EXISTING
+#	Makes a symbolic link with the provided arguments, backups target if exists.
+# 	$1 = src file to link
+# 	$2 = link target
+define LINK_AND_BACKUP_EXISTING
+	@if [ -e "${2}" ] ; \
+	then \
+		backup_target = $(DOTFILES)/backup/${2}.$(MAKE_DATE_TIME).backup ; \
+		echo "Target exists, backup to $${backup_target}" ; \
+		mkdir -p $(DOTFILES)/backup ; \
+		mv ${2} $backup_target ; \
+	fi
+	@ln -snf $1 $2 && echo "Linked $1 -> $2"
+endef
+
+## software dependencies
+is-not-installed=! (command -v $(1) > /dev/null 2> /dev/null)
+
+## Arch Linux
+trizen-pkg-is-not-installed=! (trizen -Q $(1) > /dev/null 2> /dev/null)
+pacman-pkg-is-not-installed=! (pacman -Q $(1) > /dev/null 2> /dev/null)
+
+pacman-%: 
+	@if ( $(call pacman-pkg-is-not-installed,$* ) ); \
+	then \
+		echo $* " not found in path."; \
+		echo "Installing " $*; \
+		sudo pacman -S $(ARCH_PM_FLAGS) $*; \
+	else \
+		echo $* "found"; \
+	fi
+
+trizen-%: trizen
+	@if ( $(call trizen-pkg-is-not-installed,$* ) ); \
+	then \
+		echo $* "not found in installed packages."; \
+		echo "Installing " $*; \
+		trizen -S $(ARCH_PM_FLAGS) $*; \
+	else \
+		echo $* "found"; \
+	fi
+
+trizen: git
+	@if ( $(call is-not-installed, $@ ) ); \
+	then \
+		echo $@ " not found in installed packages."; \
+		echo "Installing " $@; \
+		git clone https://aur.archlinux.org/trizen.git  /tmp/trizen \
+		&& cd /tmp/trizen \
+		&& makepkg -si --noconfirm \
+	else \
+		echo $@ " found"; \
+	fi
+
+#### Individual Dotfiles:
+
+#
+##
+###
+#### DOTFILE: ANTIBODY
+antibody: $(OSENV)-install-antibody
+arch-install-antibody: trizen-antibody-bin ~/.zsh_plugins.sh
+
+~/.zsh_plugins.sh:
+	@antibody bundle < $(DOTFILES)/antibody/bundles.txt > $(DOTFILES)/antibody/zsh_plugins.sh
+	@antibody update
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/antibody/zsh_plugins.sh, $@)
+
+#
+##
+###
+#### DOTFILE: COMPTON
+compton: $(OSENV)-install-compton
+arch-install-compton: trizen-compton-git ~/.config/compton
+
+~/.config/compton:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/compton, $@)
+
+#
+##
+###
+#### DOTFILE: DOCKER
+# 		TODO: handle install.sh
+docker: $(OSENV)-install-docker
+arch-install-docker: pacman-docker
+
+#
+##
+###
+#### DOTFILE: FEH
+feh: $(OSENV)-install-feh
+arch-install-feh: pacman-feh ~/.xinitrc
+
+#
+##
+###
+#### DOTFILE: FFMPEG
+#		TODO: change naming convention to something a bit clearer.
+ffmpeg: $(OSENV)-install-$(FULL_FFMPEG_NVENC)-ffmpeg
+#arch-install-true-ffmpeg: trizen-ffmpeg-full-nvenc
+arch-install-false-ffmpeg: pacman-ffmpeg
+
+#
+##
+###
+#### DOTFILE: FONTS
+#		TODO: uncomment, removed due to slow install speed while testing
+#		TODO: status check method
+#		fc-list | grep -q "nerd-font-complete" etc...
+#fonts: $(OSENV)-install-fonts
+#
+#arch-install-fonts: pacman-noto-fonts pacman-noto-fonts-emoji trizen-nerd-fonts-complete
+#	@fc-cache -fv
+
+#
+##
+###
+#### DOTFILE: FZF
+#		TODO: zsh integration
+fzf: $(OSENV)-install-fzf
+arch-install-fzf: pacman-fzf ~/.zshrc
+
+#
+##
+###
+#### DOTFILE: GIT
+#		TODO: configuration
+#		TODO: zsh integration
+git: $(OSENV)-install-git
+arch-install-git: pacman-git
+
+~/.gitignore:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/git/gitignore, $@)
+~/.gitconfig.local:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/git/gitconfig.local, $@)
+
+#
+##
+###
+#### DOTFILE: GOLANG
+golang: $(OSENV)-install-golang
+arch-install-golang: pacman-go pacman-go-tools ~/.zshrc
+
+#
+##
+###
+#### DOTFILE: I3WM-Gaps
+i3: $(OSENV)-install-i3
+arch-install-i3: pacman-i3-gaps ~/.config/i3 ~/.xinitrc
+
+~/.config/i3:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/i3, $@)
+
+#
+##
+###
+#### DOTFILE: MPV
+mpv: $(OSENV)-install-mpv
+arch-install-mpv: pacman-mpv ~/.config/mpv
+
+~/.config/mpv:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/mpv, $@)
+
+#
+##
+###
+#### DOTFILE: NVIM
+#		TODO: nvim plugin install?
+#		  eg:  nvim -v +PluginInstall +qall
+nvim: $(OSENV)-install-nvim
+arch-install-nvim: pacman-neovim pacman-python-neovim ~/.config/nvim
+
+~/.config/nvim:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/nvim, $@)
+
+#
+##
+###
+#### DOTFILE: Oceanic Next Shell
+#		TODO: variables for git repo destination, and oceanic-next-shell.zshrc ENV_VARS
+oceanic-next-shell: $(OSENV)-install-oceanic-next-shell
+arch-install-oceanic-next-shell: git ~/.zshrc
+	git clone https://github.com/mhartington/oceanic-next-shell.git "${DOTFILES}/oceanic-next-shell/git-repo"
+
+#
+##
+###
+#### DOTFILE: Polybar
+polybar: $(OSENV)-install-polybar
+arch-install-polybar: trizen-polybar-git ~/.config/polybar
+
+~/.config/polybar:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/polybar, $@)
+
+#
+##
+###
+#### DOTFILE: Rofi
+rofi: $(OSENV)-install-rofi
+arch-install-rofi: pacman-rofi
+
+#
+##
+###
+#### DOTFILE: Termite
+termite: $(OSENV)-install-termite
+arch-install-termite: pacman-termite pacman-termite-terminfo ~/.config/termite
+
+~/.config/termite:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/termite, $@)
+
+#
+##
+###
+#### DOTFILE: tmux
+tmux: $(OSENV)-install-tmux
+arch-install-tmux: pacman-tmux ~/.config/tmux
+
+~/.config/tmux:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/tmux, $@)
+
+#
+##
+###
+#### DOTFILE: Zathura
+zathura: $(OSENV)-install-zahtura
+arch-install-zathura: pacman-zathura ~/.config/zathura
+
+~/.config/zathura: 
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/tmux, $@)
+
+#
+##
+###
+#### DOTFILE: zsh
+zsh: $(OSENV)-install-zsh
+arch-install-zsh: pacman-zsh ~/.zshrc
+
+~/.zshrc: $(DOTFILES)/generated
+	@$(shell touch $(DOTFILES)/generated/zshrc)
+	@if [ -s $(DOTFILES)/generated/zshrc ] ; \
+	then \
+		echo '#!/bin/sh' > $(DOTFILES)/generated/zsrhc ; \
+	else \
+		mv $(DOTFILES)/generated/zsrhc $(DOTFILES)/generated/zshrc.$(MAKE_DATE_TIME).backup ; \
+		touch $(DOTFILES)/generated/zshrc ; \
+	fi;
+	@for file in $(ZSHRCD_FILES); do \
+		$(SHELL_EXPORT) envsubst <$$file | sed '1{/#!/d;}' >> $(DOTFILES)/generated/xinitrc ; \
+	done
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/generated/zshrc, $@)
+
+#
+##
+###
+#### DOTFILE: x
+x: ~/.xinitrc 
+arch-install-x: pacman-xorg-xinit
+
+~/.xinitrc: $(OSENV)-install-x ~/.Xauthority ~/.Xmodmap ~/.Xresources $(DOTFILES)/generated
+	@$(shell touch $(DOTFILES)/generated/xinitrc)
+	@touch $(DOTFILES)/generated/xinitrc
+	@if [ -s $(DOTFILES)/generated/xinitrc ] ; \
+	then \
+		echo '#!/bin/sh' > $(DOTFILES)/generated/xinitrc ; \
+	else \
+		mv $(DOTFILES)/generated/xinitrc $(DOTFILES)/generated/xinitrc.$(MAKE_DATE_TIME).backup ; \
+		touch $(DOTFILES)/generated/xinitrc ; \
+	fi;
+	@for file in $(XINITRCD_FILES); do \
+		$(SHELL_EXPORT) envsubst <$$file | sed '1{/#!/d;}' >> $(DOTFILES)/generated/xinitrc ; \
+	done
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/generated/xinitrc, $@)
+
+~/.Xauthority:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xauthority, $@)
+
+~/.Xmodmap:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xmodmap, $@)
+
+~/.Xresources:
+	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xresources, $@)
+
+
+#
+##
+###
+#### DOTFILE (META) Generated
+#		For generated dotfiles such as xinitrc, zshrc
+$(DOTFILES)/generated:
+	@mkdir -p $(DOTFILES)/generated
+
