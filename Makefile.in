@@ -24,6 +24,7 @@ XINITRCD_FILES 	:= 	$(shell find ./x/$(OSENV)-$(HWENV)/xinitrc.d -name *.xinitrc
 ARCH_PM_FLAGS 	= 	--noconfirm --needed
 MAKE_DATE_TIME 	=	$(shell date +"%Y_%m_%d_%I_%M_%p")
 OS_HW_ENV		=	$(OSENV)-$(HWENV)
+OCEANIC_NEXT_SHELL_REPO = ${DOTFILES}/oceanic-next-shell/git-repo
 
 ## Makefile helpers
 
@@ -206,10 +207,21 @@ arch-install-nvim: pacman-neovim pacman-python-neovim ~/.config/nvim
 ##
 ###
 #### DOTFILE: Oceanic Next Shell
-#		TODO: variables for git repo destination, and oceanic-next-shell.zshrc ENV_VARS
+#		TODO: oceanic-next-shell.zshrc ENV_VARS
 oceanic-next-shell: $(OSENV)-install-oceanic-next-shell
 arch-install-oceanic-next-shell: git ~/.zshrc
-	git clone https://github.com/mhartington/oceanic-next-shell.git "${DOTFILES}/oceanic-next-shell/git-repo"
+	@if [ -d $(OCEANIC_NEXT_SHELL_REPO) ] ; \
+	then \
+		cd $(OCEANIC_NEXT_SHELL_REPO) ; \
+		if git rev-parse --is-inside-work-tree 2> /dev/null ; \
+		then \
+			git pull ; \
+		fi \
+	else \
+		git clone https://github.com/mhartington/oceanic-next-shell.git  $(OCEANIC_NEXT_SHELL_REPO) ; \
+	fi ;
+
+
 
 #
 ##
@@ -252,7 +264,7 @@ arch-install-tmux: pacman-tmux ~/.config/tmux
 ##
 ###
 #### DOTFILE: Zathura
-zathura: $(OSENV)-install-zahtura
+zathura: $(OSENV)-install-zathura
 arch-install-zathura: pacman-zathura ~/.config/zathura
 
 ~/.config/zathura: 
