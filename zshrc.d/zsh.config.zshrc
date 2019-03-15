@@ -6,39 +6,23 @@ export DOTFILES="${ENV_DOTFILES}"
 export PROJECTS="$HOME/dev"
 
 # your default editor
-export EDITOR='vim'
+export EDITOR='nvim'
 export VEDITOR='code'
-
-# all of our zsh files
-typeset -U config_files
-config_files=($DOTFILES/*/*.zsh)
 
 # load the path files
 for file in ${(M)config_files:#*/path.zsh}; do
   source "$file"
 done
 
-autoload -Uz compinit
-# load everything but the path and completion files
-for file in ${${config_files:#*/path.zsh}:#*/completion.zsh}; do
-  source "$file"
-done
-
-typeset -i updated_at=$(date +'%j' -r ~/.zcompdump 2>/dev/null || stat -f '%Sm' -t '%j' ~/.zcompdump 2>/dev/null)
-if [ $(date +'%j') != $updated_at ]; then
-  compinit -i
+autoload -Uz compinit 
+if [[ -n ${ENV_ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+	compinit;
 else
-  compinit -C -i
-fi
+	compinit -C;
+fi;
 
 # load antibody plugins
 source ~/.zsh_plugins.sh
-
-
-# load every completion after autocomplete loads
-for file in ${(M)config_files:#*/completion.zsh}; do
-  source "$file"
-done
 
 unset config_files updated_at
 
@@ -50,9 +34,9 @@ unset config_files updated_at
 export LSCOLORS='exfxcxdxbxegedabagacad'
 export CLICOLOR=true
 
-fpath=($DOTFILES/functions $fpath)
+#fpath=($DOTFILES/functions $fpath)
 
-autoload -U "$DOTFILES"/functions/*(:t)
+#autoload -U "$DOTFILES"/functions/*(:t)
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 
