@@ -1,29 +1,41 @@
 #gnu makefile
 
+#TODO: 	Add nvidia configuration dotfile based on OS_HW_ENV 
+#TODO: 	Fix makefile ignoring existing dotfiles (likely a PHONY related issue, consider using FORCE)
+#TODO: 	/home/username/.zshrc:5: unknown condition: -s (fixed, but should be reviewed)
+#TODO: 	global git configure
+#TODO: 	review zshrc.d for old configurations
 
 .DEFAULT_GOAL := help
 
 install-all-arch: antibody compton docker feh ffmpeg fzf git golang \
 i3 mpv nvim oceanic-next-shell polybar rofi termite tmux zathura \
-zsh	x
+zsh	x fonts
 
 help: 
 	echo "Usage: ..."
 		
 
 #### Helpers
+comma:= ,
+empty:=
+space:= $(empty) $(empty)
 
 ## variables & env exports
 DOTFILES 		:=	$(shell pwd)
 ENV_DOTFILES	:=	$(DOTFILES)
 ENV_GOPATH 		:= 	$(GOPATH)
+# TODO: zshrc.d is appropriate?
+ENV_ZDOTDIR		:= 	$(DOTFILES)/zshrc.d
 MAKE_ENV 		+= 	ENV_GOPATH ENV_DOTFILES
-SHELL_EXPORT 	:= 	$(foreach v,$(MAKE_ENV),$(v)='$($(v))' )
-ZSHRCD_FILES 	:= 	$(shell find ./zshrc.d -name *.zshrc)
-XINITRCD_FILES 	:= 	$(shell find ./x/$(OSENV)-$(HWENV)/xinitrc.d -name *.xinitrc -print0 | sort -z)
+SHELL_EXPORT 	:= 	$(addprefix export ,$(foreach v,$(MAKE_ENV),$(v)='$($(v))' ))
+SHELL_EXPORT_VARS	:= $(subst $(space),$(comma),$(foreach v,$(MAKE_ENV),'$${$(v)}'))
+OS_HW_ENV		=	$(OSENV)-$(HWENV)
+ZSHRCD_FILES 	:= 	$(sort $(wildcard $(DOTFILES)/zshrc.d/*.zshrc))
+#export PATH="$PATH:$GOPATH/bin"
+XINITRCD_FILES 	:= 	$(sort $(wildcard $(DOTFILES)/x/$(OS_HW_ENV)/xinitrc.d/*.xinitrc))
 ARCH_PM_FLAGS 	= 	--noconfirm --needed
 MAKE_DATE_TIME 	=	$(shell date +"%Y_%m_%d_%I_%M_%p")
-OS_HW_ENV		=	$(OSENV)-$(HWENV)
 OCEANIC_NEXT_SHELL_REPO = ${DOTFILES}/oceanic-next-shell/git-repo
 
 ## Makefile helpers
@@ -33,14 +45,14 @@ OCEANIC_NEXT_SHELL_REPO = ${DOTFILES}/oceanic-next-shell/git-repo
 # 	$1 = src file to link
 # 	$2 = link target
 define LINK_AND_BACKUP_EXISTING
-	@if [ -e "${2}" ] ; \
+	if [ -e "$2" ]; \
 	then \
-		backup_target = $(DOTFILES)/backup/${2}.$(MAKE_DATE_TIME).backup ; \
-		echo "Target exists, backup to $${backup_target}" ; \
-		mkdir -p $(DOTFILES)/backup ; \
-		mv ${2} $backup_target ; \
-	fi
-	@ln -snf $1 $2 && echo "Linked $1 -> $2"
+		backup_target=$(DOTFILES)/backup/$(notdir $2).$(MAKE_DATE_TIME).backup ;\
+		echo "Target exists, backup to " $$backup_target ;\
+		mkdir -p $(DOTFILES)/backup ;\
+		mv "$2" $$backup_target ;\
+	fi ; \
+	ln -snf "$1" "$2" && echo "Linked $1 -> $2" ;
 endef
 
 ## software dependencies
@@ -51,7 +63,7 @@ trizen-pkg-is-not-installed=! (trizen -Q $(1) > /dev/null 2> /dev/null)
 pacman-pkg-is-not-installed=! (pacman -Q $(1) > /dev/null 2> /dev/null)
 
 pacman-%: 
-	@if ( $(call pacman-pkg-is-not-installed,$* ) ); \
+	@if ( $(call pacman-pkg-is-not-installed,$*) ); \
 	then \
 		echo $* " not found in path."; \
 		echo "Installing " $*; \
@@ -61,7 +73,7 @@ pacman-%:
 	fi
 
 trizen-%: trizen
-	@if ( $(call trizen-pkg-is-not-installed,$* ) ); \
+	@if ( $(call trizen-pkg-is-not-installed,$*) ); \
 	then \
 		echo $* "not found in installed packages."; \
 		echo "Installing " $*; \
@@ -71,7 +83,7 @@ trizen-%: trizen
 	fi
 
 trizen: git
-	@if ( $(call is-not-installed, $@ ) ); \
+	@if ( $(call is-not-installed,$@) ); \
 	then \
 		echo $@ " not found in installed packages."; \
 		echo "Installing " $@; \
@@ -94,7 +106,7 @@ arch-install-antibody: trizen-antibody-bin ~/.zsh_plugins.sh
 ~/.zsh_plugins.sh:
 	@antibody bundle < $(DOTFILES)/antibody/bundles.txt > $(DOTFILES)/antibody/zsh_plugins.sh
 	@antibody update
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/antibody/zsh_plugins.sh, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/antibody/zsh_plugins.sh,$@)
 
 #
 ##
@@ -104,7 +116,7 @@ compton: $(OSENV)-install-compton
 arch-install-compton: trizen-compton-git ~/.config/compton
 
 ~/.config/compton:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/compton, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/compton,$@)
 
 #
 ##
@@ -134,13 +146,12 @@ arch-install-false-ffmpeg: pacman-ffmpeg
 ##
 ###
 #### DOTFILE: FONTS
-#		TODO: uncomment, removed due to slow install speed while testing
 #		TODO: status check method
 #		fc-list | grep -q "nerd-font-complete" etc...
-#fonts: $(OSENV)-install-fonts
-#
-#arch-install-fonts: pacman-noto-fonts pacman-noto-fonts-emoji trizen-nerd-fonts-complete
-#	@fc-cache -fv
+fonts: $(OSENV)-install-fonts
+
+arch-install-fonts: pacman-noto-fonts pacman-noto-fonts-emoji trizen-nerd-fonts-complete
+	@fc-cache -fv
 
 #
 ##
@@ -160,9 +171,9 @@ git: $(OSENV)-install-git
 arch-install-git: pacman-git
 
 ~/.gitignore:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/git/gitignore, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/git/gitignore,$@)
 ~/.gitconfig.local:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/git/gitconfig.local, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/git/gitconfig.local,$@)
 
 #
 ##
@@ -176,10 +187,10 @@ arch-install-golang: pacman-go pacman-go-tools ~/.zshrc
 ###
 #### DOTFILE: I3WM-Gaps
 i3: $(OSENV)-install-i3
-arch-install-i3: pacman-i3-gaps ~/.config/i3 ~/.xinitrc
+arch-install-i3: pacman-i3-gaps ~/.config/i3 ~/.xinitrc polybar
 
 ~/.config/i3:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/i3, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/$(OS_HW_ENV)/i3,$@)
 
 #
 ##
@@ -189,7 +200,7 @@ mpv: $(OSENV)-install-mpv
 arch-install-mpv: pacman-mpv ~/.config/mpv
 
 ~/.config/mpv:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/mpv, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/mpv,$@)
 
 #
 ##
@@ -201,7 +212,7 @@ nvim: $(OSENV)-install-nvim
 arch-install-nvim: pacman-neovim pacman-python-neovim ~/.config/nvim
 
 ~/.config/nvim:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/nvim, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/nvim,$@)
 
 #
 ##
@@ -231,7 +242,8 @@ polybar: $(OSENV)-install-polybar
 arch-install-polybar: trizen-polybar-git ~/.config/polybar
 
 ~/.config/polybar:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/polybar, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/polybar/common,~/.config/polybar)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/$(OS_HW_ENV)/polybar/config,~/.config/polybar/config)
 
 #
 ##
@@ -248,7 +260,7 @@ termite: $(OSENV)-install-termite
 arch-install-termite: pacman-termite pacman-termite-terminfo ~/.config/termite
 
 ~/.config/termite:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/termite, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/termite,$@)
 
 #
 ##
@@ -258,7 +270,7 @@ tmux: $(OSENV)-install-tmux
 arch-install-tmux: pacman-tmux ~/.config/tmux
 
 ~/.config/tmux:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/tmux, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/tmux,$@)
 
 #
 ##
@@ -268,66 +280,54 @@ zathura: $(OSENV)-install-zathura
 arch-install-zathura: pacman-zathura ~/.config/zathura
 
 ~/.config/zathura: 
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/tmux, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/tmux,$@)
 
 #
 ##
 ###
 #### DOTFILE: zsh
+
 zsh: $(OSENV)-install-zsh
 arch-install-zsh: pacman-zsh ~/.zshrc
 
-~/.zshrc: $(DOTFILES)/generated
-	@$(shell touch $(DOTFILES)/generated/zshrc)
-	@if [ -s $(DOTFILES)/generated/zshrc ] ; \
-	then \
-		echo '#!/bin/sh' > $(DOTFILES)/generated/zsrhc ; \
-	else \
-		mv $(DOTFILES)/generated/zsrhc $(DOTFILES)/generated/zshrc.$(MAKE_DATE_TIME).backup ; \
-		touch $(DOTFILES)/generated/zshrc ; \
-	fi;
+GENERARTED_ZSHRC = $(DOTFILES)/zshrc.d/generated_zshrc
+
+~/.zshrc: FORCE
+	@mv $(GENERARTED_ZSHRC) $(GENERARTED_ZSHRC).$(MAKE_DATE_TIME).backup > /dev/null 2> /dev/null
+	@$(shell touch $(GENERARTED_ZSHRC))
+	@echo '#!/bin/sh' > $(GENERARTED_ZSHRC)
 	@for file in $(ZSHRCD_FILES); do \
-		$(SHELL_EXPORT) envsubst <$$file | sed '1{/#!/d;}' >> $(DOTFILES)/generated/xinitrc ; \
+		$(SHELL_EXPORT); envsubst $(SHELL_EXPORT_VARS) <$$file | sed '1{/#!/d;}' >> $(GENERARTED_ZSHRC) ; \
 	done
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/generated/zshrc, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(GENERARTED_ZSHRC),$@)
 
 #
 ##
 ###
 #### DOTFILE: x
 x: ~/.xinitrc 
-arch-install-x: pacman-xorg-xinit
+arch-install-x: pacman-xorg pacman-xorg-xinit xterm ~/.xinitrc
 
-~/.xinitrc: $(OSENV)-install-x ~/.Xauthority ~/.Xmodmap ~/.Xresources $(DOTFILES)/generated
-	@$(shell touch $(DOTFILES)/generated/xinitrc)
-	@touch $(DOTFILES)/generated/xinitrc
-	@if [ -s $(DOTFILES)/generated/xinitrc ] ; \
-	then \
-		echo '#!/bin/sh' > $(DOTFILES)/generated/xinitrc ; \
-	else \
-		mv $(DOTFILES)/generated/xinitrc $(DOTFILES)/generated/xinitrc.$(MAKE_DATE_TIME).backup ; \
-		touch $(DOTFILES)/generated/xinitrc ; \
-	fi;
+GENERARTED_XINITRC = $(DOTFILES)/x/$(OS_HW_ENV)/xinitrc.d/generated_xinitrc
+
+~/.xinitrc: FORCE ~/.Xauthority ~/.Xmodmap ~/.Xresources
+	@mv $(GENERARTED_XINITRC) $(GENERARTED_XINITRC).$(MAKE_DATE_TIME).backup > /dev/null 2> /dev/null
+	@$(shell touch $(GENERARTED_XINITRC))
+	@echo '#!/bin/sh' > $(GENERARTED_XINITRC)
 	@for file in $(XINITRCD_FILES); do \
-		$(SHELL_EXPORT) envsubst <$$file | sed '1{/#!/d;}' >> $(DOTFILES)/generated/xinitrc ; \
+		$(SHELL_EXPORT); envsubst $(SHELL_EXPORT_VARS) <$$file | sed '1{/#!/d;}' >> $(GENERARTED_XINITRC) ; \
 	done
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/generated/xinitrc, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(GENERARTED_XINITRC),$@)
 
 ~/.Xauthority:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xauthority, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/x/$(OS_HW_ENV)/Xauthority,$@)
 
 ~/.Xmodmap:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xmodmap, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/x/$(OS_HW_ENV)/Xmodmap,$@)
 
 ~/.Xresources:
-	@$(call LINK_AND_BACKUP_EXISTING, $(DOTFILES)/x/$(OS_HW_ENV)/Xresources, $@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/x/$(OS_HW_ENV)/Xresources,$@)
 
 
-#
-##
-###
-#### DOTFILE (META) Generated
-#		For generated dotfiles such as xinitrc, zshrc
-$(DOTFILES)/generated:
-	@mkdir -p $(DOTFILES)/generated
-
+.PHONY: FORCE
+FORCE:
