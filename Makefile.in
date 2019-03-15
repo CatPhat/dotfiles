@@ -186,11 +186,11 @@ arch-install-golang: pacman-go pacman-go-tools ~/.zshrc
 ##
 ###
 #### DOTFILE: I3WM-Gaps
-i3: $(OSENV)-install-i3
+i3: $(OSENV)-install-i3 FORCE
 arch-install-i3: pacman-i3-gaps pacman-i3status ~/.config/i3 ~/.xinitrc polybar
 
 ~/.config/i3:
-	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/$(OS_HW_ENV)/i3,$@)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/i3/$(OS_HW_ENV),$@)
 
 #
 ##
