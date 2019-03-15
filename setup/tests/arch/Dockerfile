@@ -148,6 +148,8 @@ RUN cd ${DOTFILES} && make ffmpeg
 #RUN cd ${DOTFILES} && make fonts
 RUN cd ${DOTFILES} && make fzf
 RUN cd ${DOTFILES} && make install-all-arch
+RUN cd ${DOTFILES} && make install-all-arch
+RUN cd ${DOTFILES} && make oceanic-next-shell
 
 RUN ls -lha $HOME
 RUN ls -lha $HOME/.config
