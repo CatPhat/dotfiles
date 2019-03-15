@@ -1,0 +1,592 @@
+;=====================================================
+;
+;   To learn more about how to configure Polybar
+;   go to https://github.com/jaagr/polybar
+;
+;   The README contains alot of information
+;
+;=====================================================
+
+[colors]
+base00  = #2B303B
+base01  = #343D46
+base02  = #4F5B66
+base03  = #65737E
+base04  = #A7ADBA
+base05  = #C0C5CE
+base06  = #DFE1E8
+base07  = #EFF1F5
+red     = #BF616A
+orange  = #D08770
+yellow  = #EBCB8B
+green   = #A3BE8C
+cyan    = #96B5B4
+blue    = #8FA1B3
+magenta = #B48EAD
+brown   = #AB7967
+
+[global/wm]
+margin-bottom = 5
+
+[bar/main]
+monitor = ${env:MONITOR:DP-4}
+width = 100%
+height = 30:-10
+enable-ipc = true
+background = ${colors.base00}
+foreground = ${colors.base05}
+
+overline-size = 2
+overline-color = ${colors.red}
+underline-size = 3
+underline-color = ${colors.base05}
+
+padding-top = 5
+padding-left = 0
+padding-right = 2
+module-margin-left = 1
+module-margin-right = 1
+
+
+font-0 = "SauceCodePro Nerd Font:style:Semibold:size=10:antialias=false;0"
+font-5 = "Material Icons:size=12:antialias=true;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:antialias=false:size=18;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
+
+modules-left = i3
+modules-center = cpu memory temp0 eth rootfts
+#modules-right = hamster music volume pamixer date
+modules-right =  hamster pulseaudio date
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+cursor-click = pointer
+tray-position = left
+locale = en_US.UTF8
+
+[bar/left]
+monitor = ${env:MONITOR:DP-2}
+width = 100%
+height = 23
+enable-ipc = true
+background = ${colors.base00}
+foreground = ${colors.base05}
+
+overline-size = 2
+overline-color = ${colors.red}
+underline-size = 3
+underline-color = ${colors.base05}
+
+padding-top = 5
+padding-left = 0
+padding-right = 2
+module-margin-left = 1
+module-margin-right = 1
+
+
+font-0 = "monospace:size=10;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:size=10;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-5 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
+
+modules-left = i3
+modules-center = openweathermap-fullfeatured
+modules-right = pulseaudio date
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+[bar/right]
+monitor = ${env:MONITOR:DVI-D-0}
+width = 100%
+height = 30:-10
+enable-ipc = true
+background = ${colors.base00}
+foreground = ${colors.base05}
+
+overline-size = 2
+overline-color = ${colors.red}
+underline-size = 3
+underline-color = ${colors.base05}
+
+padding-top = 5
+padding-left = 0
+padding-right = 2
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = "monospace:size=10;0"
+font-4 = "SauceCodePro Nerd Font:style:Semibold:size=10;0"
+font-1 = "Hack Nerd Font:size=10;2"
+font-2 = "FontAwesome:pixelsize=12;1"
+font-3 = "FontAwesome:pixelsize=13;1"
+font-5 = "FontAwesome:pixelsize=13;1"
+font-6 = Weather Icons:size=12;1
+
+modules-left = i3
+modules-center = openweathermap-fullfeatured
+modules-right = pulseaudio date
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+[module/ipctest]
+type = custom/ipc
+hook-0 = echo foobar %pid%
+hook-1 = whoami
+format = <output>
+initial = 1
+
+[module/i3dwgo]
+type = custom/script
+exec = /home/user9/dev/go/src/vedos/i3dw-go/i3dw-go
+interval = .2
+format = <label>
+label-font = 4
+format-font = 4
+label = %output%
+
+[module/i3]
+type = internal/i3
+pin-workspaces = true
+strip-wsnumbers = true
+format = <label-state> %{T2}<label-mode>
+index-sort = true
+wrapping-scroll = false
+
+label-mode-padding = 1
+label-mode-foreground = ${colors.base01}
+label-mode-background = ${colors.blue}
+
+label-focused = %{T3}%name%
+label-focused-foreground = ${colors.base06}
+label-focused-background = ${colors.base03}
+label-focused-underline = ${colors.blue}
+label-focused-padding = 1
+
+label-unfocused = %{T3}%name%
+label-unfocused-foreground = ${colors.base04}
+label-unfocused-background = ${colors.base01}
+label-unfocused-padding = 1
+
+label-urgent = %{T3}%name%
+label-urgent-background = ${colors.red}
+label-urgent-padding = 1
+
+label-visible = %{T3}%name%
+label-visible-foreground = ${colors.base04}
+label-visible-background = ${colors.base02}
+label-visible-underline = ${colors.base02}
+label-visible-padding = 1
+
+[module/music]
+type = custom/script
+interval = 2
+
+label = %output:0:50:...%
+exec = ~/.config/polybar/music.sh
+
+[module/hamster]
+type = custom/script
+interval = 2
+
+exec = ~/.config/polybar/hamster.sh
+
+format-prefix = %{T3} %{T-}
+format-prefix-foreground = ${colors.magenta}
+
+[module/pamixer]
+type = custom/script
+interval = 0
+
+exec = ~/.config/polybar/pamixer.sh
+
+click-left = pamixer -t
+
+scroll-up = pamixer -i 5
+scroll-down = pamixer -d 5
+
+[module/volume]
+type = internal/volume
+
+format-volume = <label-volume> <bar-volume>
+label-volume = %{T3}
+label-volume-foreground = ${colors.cyan}
+
+format-muted = <label-muted>
+format-muted-foreground = ${colors.base03}
+label-muted =  ────────
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.green}
+bar-volume-foreground-1 = ${colors.green}
+bar-volume-foreground-2 = ${colors.green}
+bar-volume-foreground-3 = ${colors.green}
+bar-volume-foreground-4 = ${colors.yellow}
+bar-volume-foreground-5 = ${colors.orange}
+bar-volume-foreground-6 = ${colors.red}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-fill = ━
+bar-volume-empty = ─
+bar-volume-empty-foreground = ${colors.base05}
+
+[module/rootfs]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+
+format-mounted = <bar-used>
+format-mounted-prefix = %{T3} %{T-}
+format-mounted-prefix-foreground = ${colors.blue}
+
+bar-used-width = 6
+bar-used-foreground-0 = ${colors.green}
+bar-used-foreground-1 = ${colors.green}
+bar-used-foreground-2 = ${colors.green}
+bar-used-foreground-3 = ${colors.green}
+bar-used-foreground-4 = ${colors.yellow}
+bar-used-foreground-5 = ${colors.orange}
+bar-used-foreground-6 = ${colors.red}
+bar-used-gradient = false
+bar-used-indicator = |
+bar-used-fill = ━
+bar-used-empty = ─
+bar-used-empty-foreground = ${colors.base05}
+
+[module/homefs]
+type = internal/fs
+interval = 25
+
+mount-0 = /home
+
+format-mounted = <bar-used>
+format-mounted-prefix = %{T3} %{T-}
+format-mounted-prefix-foreground = ${colors.yellow}
+
+bar-used-width = 6
+bar-used-foreground-0 = ${colors.green}
+bar-used-foreground-1 = ${colors.green}
+bar-used-foreground-2 = ${colors.green}
+bar-used-foreground-3 = ${colors.green}
+bar-used-foreground-4 = ${colors.yellow}
+bar-used-foreground-5 = ${colors.orange}
+bar-used-foreground-6 = ${colors.red}
+bar-used-gradient = false
+bar-used-indicator = |
+bar-used-fill = ━
+bar-used-empty = ─
+bar-used-empty-foreground = ${colors.base05}
+
+[module/memory]
+type = internal/memory
+interval = 1
+format = <label> <ramp-used>
+format-prefix = %{T3} %{T-}
+format-prefix-foreground = ${colors.blue}
+label = %gb_used%
+
+ramp-used-0 = ▁
+ramp-used-1 = ▂
+ramp-used-2 = ▃
+ramp-used-3 = ▄
+ramp-used-4 = ▅
+ramp-used-5 = ▆
+ramp-used-6 = ▇
+ramp-used-7 = █
+ramp-used-foreground-0 = ${colors.green}
+ramp-used-foreground-1 = ${colors.green}
+ramp-used-foreground-2 = ${colors.green}
+ramp-used-foreground-3 = ${colors.green}
+ramp-used-foreground-4 = ${colors.yellow}
+ramp-used-foreground-5 = ${colors.orange}
+ramp-used-foreground-6 = ${colors.red}
+ramp-used-foreground-7 = ${colors.red}
+
+
+#bar-used-width = 6
+#bar-used-format = %fill%%empty%
+#bar-used-foreground-0 = ${colors.green}
+#bar-used-foreground-1 = ${colors.green}
+#bar-used-foreground-2 = ${colors.green}
+#bar-used-foreground-3 = ${colors.green}
+#bar-used-foreground-4 = ${colors.yellow}
+#bar-used-foreground-5 = ${colors.orange}
+#bar-used-foreground-6 = ${colors.red}
+#bar-used-gradient = false
+#bar-used-fill = ▉
+#bar-used-empty = ▉
+#bar-used-empty-foreground = ${colors.base03}
+
+[module/cpu]
+type = internal/cpu
+interval = 1
+format = <label> <ramp-coreload>
+format-prefix = %{T3} %{T-}
+format-prefix-foreground = ${colors.blue}
+label = %percentage%%
+
+
+ramp-coreload-0 = ▁
+ramp-coreload-1 = ▂
+ramp-coreload-2 = ▃
+ramp-coreload-3 = ▄
+ramp-coreload-4 = ▅
+ramp-coreload-5 = ▆
+ramp-coreload-6 = ▇
+ramp-coreload-7 = █
+ramp-coreload-0-foreground = ${colors.green}
+ramp-coreload-1-foreground = ${colors.green}
+ramp-coreload-2-foreground = ${colors.green}
+ramp-coreload-3-foreground = ${colors.green}
+ramp-coreload-4-foreground = ${colors.yellow}
+ramp-coreload-5-foreground = ${colors.orange}
+ramp-coreload-6-foreground = ${colors.red}
+ramp-coreload-7-foreground = ${colors.red}
+
+bar-load-width = 6
+bar-load-format = %fill%%empty%
+bar-load-foreground-0 = ${colors.green}
+bar-load-foreground-1 = ${colors.green}
+bar-load-foreground-2 = ${colors.green}
+bar-load-foreground-3 = ${colors.green}
+bar-load-foreground-4 = ${colors.yellow}
+bar-load-foreground-5 = ${colors.orange}
+bar-load-foreground-6 = ${colors.red}
+bar-load-gradient = false
+bar-load-fill = %{T2}
+bar-load-empty = %{T2}
+bar-load-empty-foreground = ${colors.base03}
+
+[module/temp0]
+type = internal/temperature
+thermal-zone = 0
+warn-temperature = 70
+
+format = <ramp> <label>
+format-warn = <ramp> <label-warn>
+format-warn-underline = ${colors.red}
+
+label = %temperature-c%
+label-warn = %temperature-c%
+label-warn-foreground = ${colors.orange}
+
+ramp-0 = %{T3}
+ramp-0-foreground = ${colors.blue}
+ramp-1 = %{T3}
+ramp-1-foreground = ${colors.blue}
+ramp-2 = %{T3}
+ramp-2-foreground = ${colors.green}
+ramp-3 = %{T3}
+ramp-3-foreground = ${colors.green}
+ramp-4 = %{T3}
+ramp-4-foreground = ${colors.yellow}
+ramp-5 = %{T3}
+ramp-5-foreground = ${colors.orange}
+ramp-6 = %{T3}
+ramp-6-foreground = ${colors.red}
+
+[module/eth]
+type = internal/network
+interface = enp7s0
+interval = 3.0
+
+format-connected-prefix = %{T4} %{T-}
+format-connected-prefix-foreground = ${colors.green}
+label-connected = %downspeed:5:7% %{T4}%{T-} %upspeed:5:7% %{T4}%{T-}
+label-connected-foreground = ${colors.blue}
+
+format-disconnected = <label-disconnected>
+label-disconnected-foreground = ${colors.base03}
+label-disconnected = %{T4}" "
+
+; Test connectivity every Nth update
+; A value of 0 disables the feature
+; NOTE: Experimental (needs more testing)
+; Default: 0
+ping-interval = 3
+
+; Accumulate values from all interfaces
+; when querying for up/downspeed rate
+; Default: false
+accumulate-stats = true
+
+; Only applies if <animation-packetloss> is used
+animation-packetloss-0 = ⚠
+animation-packetloss-0-foreground = #ffa64c
+animation-packetloss-1 = 📶
+animation-packetloss-1-foreground = #000000
+; Framerate in milliseconds
+animation-packetloss-framerate = 500
+
+[module/wlan]
+type = internal/network
+interface = wlp2s0
+interval = 1.0
+
+format-connected = <ramp-signal>
+label-connected = %essid%
+
+format-disconnected = <label-disconnected>
+label-disconnected = 
+label-disconnected-foreground = ${colors.base03}
+
+ramp-signal-0 = %{T3}
+ramp-signal-0-foreground = ${colors.red}
+ramp-signal-1 = %{T3}
+ramp-signal-1-foreground = ${colors.orange}
+ramp-signal-2 = %{T3}
+ramp-signal-2-foreground = ${colors.orange}
+ramp-signal-3 = %{T3}
+ramp-signal-3-foreground = ${colors.yellow}
+ramp-signal-4 = %{T3}
+ramp-signal-4-foreground = ${colors.green}
+ramp-signal-5 = %{T3}
+ramp-signal-5-foreground = ${colors.green}
+
+[module/redshift]
+type = custom/script
+interval = 5
+
+exec = ~/.config/polybar/redshift.sh
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 98
+
+format-charging = <animation-charging>
+
+format-discharging = <ramp-capacity>
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.green}
+
+ramp-capacity-0 = %{T3}
+ramp-capacity-0-foreground = ${colors.red}
+ramp-capacity-1 = %{T3}
+ramp-capacity-1-foreground = ${colors.orange}
+ramp-capacity-2 = %{T3}
+ramp-capacity-2-foreground = ${colors.yellow}
+ramp-capacity-3 = %{T3}
+ramp-capacity-3-foreground = ${colors.green}
+ramp-capacity-4 = %{T3}
+ramp-capacity-4-foreground = ${colors.green}
+
+animation-charging-0 = %{T3}
+animation-charging-1 = %{T3}
+animation-charging-2 = %{T3}
+animation-charging-3 = %{T3}
+animation-charging-4 = %{T3}
+animation-charging-foreground = ${colors.yellow}
+animation-charging-framerate = 750
+
+[module/date]
+type = internal/date
+interval = 5
+
+date = %a %m-%d-%Y
+time = %H:%M
+
+;format-prefix = 
+;format-prefix-foreground = ${colors.base05}
+;;format-underline = ${colors.magenta}
+
+label = %{T3}%{T-} %date% %{T3}%{T-} %time%
+label-foreground = ${colors.blue}
+
+; vim:ft=dosini
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+; Sink to be used, if it exists (find using `pacmd list-sinks`, name field)
+; If not, uses default sink
+sink = alsa_output.pci-0000_00_1f.3.analog-stereo
+
+; Use PA_VOLUME_UI_MAX (~153%) if true, or PA_VOLUME_NORM (100%) if false
+; Default: true
+use-ui-max = false
+
+; Interval for volume increase/decrease (in percent points) (unreleased)
+; Default: 5
+interval = 5
+
+; Available tags:
+;   <label-volume> (default)
+;   <ramp-volume>
+;   <bar-volume>
+format-volume = %{T5} %{A3:pavucontrol &:} <label-volume> <bar-volume> %{A} %{T5-}
+;format-volume = <label-volume> <bar-volume>
+
+label-volume = %{T3}
+label-volume-foreground = ${colors.cyan}
+
+format-muted = <label-muted>
+format-muted-foreground = ${colors.base03}
+label-muted =  ────────
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.green}
+bar-volume-foreground-1 = ${colors.green}
+bar-volume-foreground-2 = ${colors.green}
+bar-volume-foreground-3 = ${colors.green}
+bar-volume-foreground-4 = ${colors.yellow}
+bar-volume-foreground-5 = ${colors.orange}
+bar-volume-foreground-6 = ${colors.red}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-fill = ━
+bar-volume-empty = ─
+bar-volume-empty-foreground = ${colors.base05}
+
+
+
+;; Available tokens:
+;;   %percentage% (default)
+;;label-muted = %{T4}
+;;label-muted-foreground = #666
+;
+;; Only applies if <ramp-volume> is used
+;ramp-volume-0 = %{T5}
+;ramp-volume-0-foreground = ${colors.blue}
+;ramp-volume-1 = %{T5}
+;ramp-volume-1-foreground = ${colors.green}
+;ramp-volume-2 = %{T5}
+;ramp-volume-2-foreground = ${colors.red}
+;
+;label-volume = %{T3}
+;label-volume-foreground = ${colors.cyan}
+;
+;format-muted = <label-muted>
+;format-muted-foreground = ${colors.base03}
+;label-muted =  ────────
+;
+;bar-volume-width = 10
+;bar-volume-foreground-0 = ${colors.green}
+;bar-volume-foreground-1 = ${colors.green}
+;bar-volume-foreground-2 = ${colors.green}
+;bar-volume-foreground-3 = ${colors.green}
+;bar-volume-foreground-4 = ${colors.yellow}
+;bar-volume-foreground-5 = ${colors.orange}
+;bar-volume-foreground-6 = ${colors.red}
+;bar-volume-gradient = false
+;bar-volume-indicator = |
+;bar-volume-fill = ━
+;bar-volume-empty = ─
+;bar-volume-empty-foreground = ${colors.base05}
+
+[module/openweathermap-fullfeatured]
+type = custom/script
+exec = ~/.dotfiles/.config/polybar/openweathermap-fullfeatured.sh
+interval = 600
+label-font = 7
+label-background = ${colors.base00}
+label-padding = 2
