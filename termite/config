@@ -6,7 +6,11 @@ mouse_autohide = true
 allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
-font = SauceCodePro Nerd Font,Semibold 7
+#clickable_url = true
+#font = Hack Nerd Font Mono, 10
+font = SauceCodePro Nerd Font,Semibold 10
+#font = SauceCodePro Nerd Font, 13
+#font = Source Code Pro,Semibold 10
 scrollback_lines = 10000
 search_wrap = true
 #icon_name = terminal
@@ -35,6 +39,7 @@ foreground      = #c0c5ce
 foreground_bold = #dfe1e8
 cursor          = #dfe1e8
 background      = #2b303b
+
 # 16 color space
 
 # Black, Gray, Silver, White
@@ -77,7 +82,7 @@ color21 = #dfe1e8
 
 
 [hints]
-font = Source Code Pro,bold 11
+font = SauceCodePro Nerd Font, Bold 10
 foreground = #343d46
 background = #ebcb8b
 padding = 2
