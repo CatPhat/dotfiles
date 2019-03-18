@@ -75,7 +75,7 @@ bindsym --release Shift+Print exec  "scrot -zs ~/dev/misc/screenshots/%Y-%m-%d_%
 #       Workspaces        #
 #-------------------------#
 
-set $middle_monitor DVI-I-1
+set $middle_monitor HDMI-0
 #set $left_monitor DP-2
 #set $right_monitor DVI-D-0
 
