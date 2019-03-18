@@ -29,7 +29,7 @@ brown   = #AB7967
 margin-bottom = 5
 
 [bar/main]
-monitor = ${env:MONITOR:DVI-I-1}
+monitor = ${env:MONITOR:HDMI-0}
 width = 100%
 height = 30:-10
 enable-ipc = true
@@ -325,7 +325,7 @@ ramp-6-foreground = ${colors.red}
 
 [module/eth]
 type = internal/network
-interface = enp7s0
+interface = enp8s0
 interval = 3.0
 
 format-connected-prefix = %{T4} %{T-}

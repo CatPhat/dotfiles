@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Termite all instances
 killall -q polybar
@@ -8,3 +8,5 @@ while pgrep -U $UID -x polybar >/dev/null; do sleep 1; done
 
 # Launch
 polybar main &
+polybar left &
+polybar right &
