@@ -1,7 +1,7 @@
 #!/bin/sh
 
 v() {
-    nvim
+    nvim "$1"
 }
 
 sv() {
