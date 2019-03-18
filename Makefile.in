@@ -5,6 +5,9 @@
 #TODO: 	/home/username/.zshrc:5: unknown condition: -s (fixed, but should be reviewed)
 #TODO: 	global git configure
 #TODO: 	review zshrc.d for old configurations
+#TODO:	fix nvim (no plugin manager)
+#TODO:	handle synergy/barrier
+#TODO:	fix zshrc v alias
 
 .DEFAULT_GOAL := help
 
@@ -241,9 +244,10 @@ arch-install-oceanic-next-shell: git ~/.zshrc
 polybar: $(OSENV)-install-polybar
 arch-install-polybar: trizen-polybar-git ~/.config/polybar
 
-~/.config/polybar:
-	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/polybar/common,~/.config/polybar)
-	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/$(OS_HW_ENV)/polybar/config,~/.config/polybar/config)
+~/.config/polybar: FORCE
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/polybar/$(OS_HW_ENV)/config,$(DOTFILES)/polybar/config)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/polybar/$(OS_HW_ENV)/launch.sh,$(DOTFILES)/polybar/launch.sh)
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/polybar,$@)
 
 #
 ##
@@ -267,10 +271,10 @@ arch-install-termite: pacman-termite pacman-termite-terminfo ~/.config/termite
 ###
 #### DOTFILE: tmux
 tmux: $(OSENV)-install-tmux
-arch-install-tmux: pacman-tmux ~/.config/tmux
+arch-install-tmux: pacman-tmux ~/.tmux.conf
 
-~/.config/tmux:
-	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/tmux,$@)
+~/.tmux.conf:
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/tmux/tmux.conf,$@)
 
 #
 ##
