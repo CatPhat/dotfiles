@@ -332,6 +332,16 @@ GENERARTED_XINITRC = $(DOTFILES)/x/$(OS_HW_ENV)/xinitrc.d/generated_xinitrc
 ~/.Xresources:
 	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/x/$(OS_HW_ENV)/Xresources,$@)
 
+#
+##
+###
+#### DOTFILE: VSCode
+#		TODO: http://shanalikhan.github.io/2015/12/15/Visual-Studio-Code-Sync-Settings.html
+vscode: $(OSENV)-install-vscode
+arch-install-vscode: pacman-code ~/.config/vscode
+
+~/.config/vscode:
+	@$(call LINK_AND_BACKUP_EXISTING,$(DOTFILES)/vscode,$@)
 
 .PHONY: FORCE
 FORCE:
