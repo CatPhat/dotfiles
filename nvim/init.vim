@@ -105,7 +105,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
 " ══════ Integrated Development ════════
-
+Plug 'calviken/vim-gdscript3'
 " Tag bar
 Plug 'majutsushi/tagbar'
 " Code Linting
@@ -507,6 +507,7 @@ nnoremap <silent> <leader>bv :vnew<CR>
 
 " toggle line numbers
 nnoremap <silent> <leader>n :set number! number?<CR>
+
 
 
 " ═══════════════════════════════╡ auto completion ╞═════════════════════════════════
