@@ -9,4 +9,4 @@ while pgrep -U $UID -x polybar >/dev/null; do sleep 1; done
 # Launch
 polybar main &
 polybar left &
-polybar right &
+polybar top &
