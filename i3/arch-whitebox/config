@@ -38,7 +38,7 @@ set $transparent #00000000
 #-------------------------#
 
 # Application Launcher
-bindsym $mod+grave exec     "fish -c 'rofi -m -5 -show run'"
+bindsym $mod+grave exec     "zsh -c 'rofi -m -5 -show run'"
 
 # Window Switcher
 bindsym $mod+Tab exec       "rofi -show window"
@@ -79,59 +79,97 @@ bindsym --release Shift+Print exec  "scrot -zs ~/incoming/screenshots/%Y-%m-%d_%
 #       Workspaces        #
 #-------------------------#
 
-set $middle_monitor DP-4
+set $main_monitor DP-4
 set $left_monitor DP-2
-set $right_monitor DVI-D-0
+set $top_monitor HDMI-0
 
 # Name workspaces
 
-# Middle monitor
-set $ws1_m      1:
-set $ws2_m      2:
-set $ws3_m      3:
-set $ws4_m      4:
-set $ws5_m      5:
-set $ws6_m      6:
-set $ws7_m      7:
-set $ws8_m      8:
-set $ws9_m      9:
-set $ws10_m     10:
+# Main monitor
+set $ws1_m      1:1
+set $ws2_m      2:2
+set $ws3_m      3:3
+set $ws4_m      4:4
+set $ws5_m      5:5
+set $ws6_m      6:6
+set $ws7_m      7:7
+set $ws8_m      8:8
+set $ws9_m      9:9
+set $ws10_m     10:10
 
 # Left monitor
-set $ws1_l      11:
-set $ws2_l      12:
-set $ws3_l      13:
-set $ws4_l      14:
-set $ws5_l      15:
-set $ws6_l      16:
-set $ws7_l      17:
-set $ws8_l      18:
-set $ws9_l      19:
-set $ws10_l     20:
+set $ws1_l      11:1
+set $ws2_l      12:2
+set $ws3_l      13:3
+set $ws4_l      14:4
+set $ws5_l      15:5
+set $ws6_l      16:6
+set $ws7_l      17:7
+set $ws8_l      18:8
+set $ws9_l      19:9
+set $ws10_l     20:10
 
-# Right monitor
-set $ws1_r      21:
-set $ws2_r      22:
-set $ws3_r      23:
-set $ws4_r      24:
-set $ws5_r      25:
-set $ws6_r      26:
-set $ws7_r      27:
-set $ws8_r      28:
-set $ws9_r      29:
-set $ws10_r     30:
+# Top monitor
+set $ws1_t      21:1
+set $ws2_t      22:2
+set $ws3_t      23:3
+set $ws4_t      24:4
+set $ws5_t      25:5
+set $ws6_t      26:6
+set $ws7_t      27:7
+set $ws8_t      28:8
+set $ws9_t      29:9
+set $ws10_t     30:10
+
+## Main monitor
+#set $ws1_m      1:
+#set $ws2_m      2:
+#set $ws3_m      3:
+#set $ws4_m      4:
+#set $ws5_m      5:
+#set $ws6_m      6:
+#set $ws7_m      7:
+#set $ws8_m      8:
+#set $ws9_m      9:
+#set $ws10_m     10:
+#
+## Left monitor
+#set $ws1_l      11:
+#set $ws2_l      12:
+#set $ws3_l      13:
+#set $ws4_l      14:
+#set $ws5_l      15:
+#set $ws6_l      16:
+#set $ws7_l      17:
+#set $ws8_l      18:
+#set $ws9_l      19:
+#set $ws10_l     20:
+#
+## Top monitor
+#set $ws1_t      21:
+#set $ws2_t      22:
+#set $ws3_t      23:
+#set $ws4_t      24:
+#set $ws5_t      25:
+#set $ws6_t      26:
+#set $ws7_t      27:
+#set $ws8_t      28:
+#set $ws9_t      29:
+#set $ws10_t     30:
+#
 
 
-workspace $ws1_m output     $middle_monitor
-workspace $ws2_m output     $middle_monitor
-workspace $ws3_m output     $middle_monitor
-workspace $ws4_m output     $middle_monitor
-workspace $ws5_m output     $middle_monitor
-workspace $ws6_m output     $middle_monitor
-workspace $ws7_m output     $middle_monitor
-workspace $ws8_m output     $middle_monitor
-workspace $ws9_m output     $middle_monitor
-workspace $ws10_m output    $middle_monitor
+
+workspace $ws1_m output     $main_monitor
+workspace $ws2_m output     $main_monitor
+workspace $ws3_m output     $main_monitor
+workspace $ws4_m output     $main_monitor
+workspace $ws5_m output     $main_monitor
+workspace $ws6_m output     $main_monitor
+workspace $ws7_m output     $main_monitor
+workspace $ws8_m output     $main_monitor
+workspace $ws9_m output     $main_monitor
+workspace $ws10_m output    $main_monitor
 
 workspace $ws1_l output     $left_monitor
 workspace $ws2_l output     $left_monitor
@@ -144,20 +182,20 @@ workspace $ws8_l output     $left_monitor
 workspace $ws9_l output     $left_monitor
 workspace $ws10_l output    $left_monitor
 
-workspace $ws1_r output     $right_monitor
-workspace $ws2_r output     $right_monitor
-workspace $ws3_r output     $right_monitor
-workspace $ws4_r output     $right_monitor
-workspace $ws5_r output     $right_monitor
-workspace $ws6_r output     $right_monitor
-workspace $ws7_r output     $right_monitor
-workspace $ws8_r output     $right_monitor
-workspace $ws9_r output     $right_monitor
-workspace $ws10_r output    $right_monitor
+workspace $ws1_t output     $top_monitor
+workspace $ws2_t output     $top_monitor
+workspace $ws3_t output     $top_monitor
+workspace $ws4_t output     $top_monitor
+workspace $ws5_t output     $top_monitor
+workspace $ws6_t output     $top_monitor
+workspace $ws7_t output     $top_monitor
+workspace $ws8_t output     $top_monitor
+workspace $ws9_t output     $top_monitor
+workspace $ws10_r output    $top_monitor
 
 # Move focused workspace to monitor
-bindsym $mod+Shift+bracketleft move workspace to output left
-bindsym $mod+Shift+bracketright move workspace to output right
+#bindsym $mod+Shift+bracketleft move workspace to output left
+#bindsym $mod+Shift+bracketright move workspace to output right
 
 #-------------------------#
 #       Containers        #
@@ -203,8 +241,8 @@ mode "resize" {
 }
 
 # move container to workspace
-bindsym $mod+Shift+Up mode "move-center"
-mode "move-center" {
+bindsym $mod+Shift+Down mode "move-main"
+mode "move-main" {
     # Move focused container to workspace
     bindsym 1 move container to workspace $ws1_m; mode "default"
     bindsym 2 move container to workspace $ws2_m; mode "default"
@@ -237,27 +275,27 @@ mode "move-left" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+Shift+Right mode "move-right"
-mode "move-right" {
+bindsym $mod+Shift+Up mode "move-top"
+mode "move-top" {
     # Move focused container to workspace
-    bindsym 1 move container to workspace $ws1_r; mode "default"
-    bindsym 2 move container to workspace $ws2_r; mode "default"
-    bindsym 3 move container to workspace $ws3_r; mode "default"
-    bindsym 4 move container to workspace $ws4_r; mode "default"
-    bindsym 5 move container to workspace $ws5_r; mode "default"
-    bindsym 6 move container to workspace $ws6_r; mode "default"
-    bindsym 7 move container to workspace $ws7_r; mode "default"
-    bindsym 8 move container to workspace $ws8_r; mode "default"
-    bindsym 9 move container to workspace $ws9_r; mode "default"
-    bindsym 0 move container to workspace $ws10_r; mode "default"
+    bindsym 1 move container to workspace $ws1_t; mode "default"
+    bindsym 2 move container to workspace $ws2_t; mode "default"
+    bindsym 3 move container to workspace $ws3_t; mode "default"
+    bindsym 4 move container to workspace $ws4_t; mode "default"
+    bindsym 5 move container to workspace $ws5_t; mode "default"
+    bindsym 6 move container to workspace $ws6_t; mode "default"
+    bindsym 7 move container to workspace $ws7_t; mode "default"
+    bindsym 8 move container to workspace $ws8_t; mode "default"
+    bindsym 9 move container to workspace $ws9_t; mode "default"
+    bindsym 0 move container to workspace $ws10_t; mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
 
 
 # view workspace
-bindsym $mod+Up mode "view-center"
-mode "view-center" {
+bindsym $mod+Down mode "view-main"
+mode "view-main" {
     # Switch to workspace
     bindsym 1 workspace $ws1_m; mode "default"
     bindsym 2 workspace $ws2_m; mode "default"
@@ -290,19 +328,19 @@ mode "view-left" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+Right mode "view-right"
-mode "view-right" {
+bindsym $mod+Up mode "view-top"
+mode "view-top" {
     # Switch to workspace
-    bindsym 1 workspace $ws1_r; mode "default"
-    bindsym 2 workspace $ws2_r; mode "default"
-    bindsym 3 workspace $ws3_r; mode "default"
-    bindsym 4 workspace $ws4_r; mode "default"
-    bindsym 5 workspace $ws5_r; mode "default"
-    bindsym 6 workspace $ws6_r; mode "default"
-    bindsym 7 workspace $ws7_r; mode "default"
-    bindsym 8 workspace $ws8_r; mode "default"
-    bindsym 9 workspace $ws9_r; mode "default"
-    bindsym 0 workspace $ws10_r; mode "default"
+    bindsym 1 workspace $ws1_t; mode "default"
+    bindsym 2 workspace $ws2_t; mode "default"
+    bindsym 3 workspace $ws3_t; mode "default"
+    bindsym 4 workspace $ws4_t; mode "default"
+    bindsym 5 workspace $ws5_t; mode "default"
+    bindsym 6 workspace $ws6_t; mode "default"
+    bindsym 7 workspace $ws7_t; mode "default"
+    bindsym 8 workspace $ws8_t; mode "default"
+    bindsym 9 workspace $ws9_t; mode "default"
+    bindsym 0 workspace $ws10_t; mode "default"
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
@@ -362,10 +400,11 @@ for_window [class="Remmina"] floating enable
 for_window [class="Wireshark-gtk"] floating enable
 for_window [class="Python3"] floating enable
 for_window [class="python"] floating enable
-for_window [class="Unity"] floating enable
+for_window [class="Unity"] floating enable,move absolute center,move output middle
 for_window [class="Wireshark-gtk"] move container to $ws2_r
 for_window [window_role="pop-up"] floating enable
 for_window [window_role="task_dialog"] floating enable
+for_window [class="qjackctl"] floating enable
 
 #-------------------------#
 #     Session Control     #
