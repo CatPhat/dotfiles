@@ -309,8 +309,12 @@ GENERARTED_ZSHRC = $(DOTFILES)/zshrc.d/generated_zshrc
 ##
 ###
 #### DOTFILE: x
-x: ~/.xinitrc 
-arch-install-x: pacman-xorg pacman-xorg-xinit xterm ~/.xinitrc
+x: $(OSENV)-install-x
+#'pacman-xorg: xorg not found in path'
+arch-install-x: arch-snowflake-x ~/.xinitrc
+
+arch-snowflake-x: 
+	sudo pacman -S $(ARCH_PM_FLAGS) xorg xorg-xinit xterm
 
 GENERARTED_XINITRC = $(DOTFILES)/x/$(OS_HW_ENV)/xinitrc.d/generated_xinitrc
 
