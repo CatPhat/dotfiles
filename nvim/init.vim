@@ -124,15 +124,26 @@ Plug 'tpope/vim-rhubarb'
 " Show a diff using Vim its sign column. 
 Plug 'mhinz/vim-signify'
 
-" PLUGIN: justinmk/vim-dirvish
-" https://github.com/justinmk/vim-dirvish
-" Path navigator designed to work with Vim's built-in mechanisms.
-Plug 'justinmk/vim-dirvish'
+"" PLUGIN: justinmk/vim-dirvish
+"" https://github.com/justinmk/vim-dirvish
+"" Path navigator designed to work with Vim's built-in mechanisms.
+"Plug 'justinmk/vim-dirvish'
+"
+"" PLUGIN: kristijanhusak/vim-dirvish-git
+"" https://github.com/kristijanhusak/vim-dirvish-git
+"" Git support for dirvish.vim 
+"Plug 'kristijanhusak/vim-dirvish-git'
 
-" PLUGIN: kristijanhusak/vim-dirvish-git
-" https://github.com/kristijanhusak/vim-dirvish-git
-" Git support for dirvish.vim 
-Plug 'kristijanhusak/vim-dirvish-git'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+augroup nerd_loader
+  autocmd!
+  autocmd VimEnter * silent! autocmd! FileExplorer
+  autocmd BufEnter,BufNew *
+        \  if isdirectory(expand('<amatch>'))
+        \|   call plug#load('nerdtree')
+        \|   execute 'autocmd! nerd_loader'
+        \| endif
+augroup END
 
 " Colors
 Plug 'junegunn/seoul256.vim'
