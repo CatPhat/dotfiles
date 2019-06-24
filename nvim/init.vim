@@ -135,6 +135,7 @@ Plug 'justinmk/vim-dirvish'
 Plug 'kristijanhusak/vim-dirvish-git'
 
 " Colors
+Plug 'junegunn/seoul256.vim'
 Plug 'tomasr/molokai'
 Plug 'chriskempson/vim-tomorrow-theme'
 Plug 'morhetz/gruvbox'
@@ -255,6 +256,8 @@ endif
 
 " Keep the cursor on the same column
 set nostartofline
+
+silent! colo deep-space
 
 if has('nvim')
   " https://github.com/neovim/neovim/issues/2897#issuecomment-115464516
@@ -488,6 +491,63 @@ function! s:rotate_colors()
   echo name
 endfunction
 nnoremap <silent> <F8> :call <SID>rotate_colors()<cr>
+
+" ----------------------------------------------------------------------------
+" Syntax highlighting in code snippets
+" ----------------------------------------------------------------------------
+function! s:syntax_include(lang, b, e, inclusive)
+  let syns = split(globpath(&rtp, "syntax/".a:lang.".vim"), "\n")
+  if empty(syns)
+    return
+  endif
+
+  if exists('b:current_syntax')
+    let csyn = b:current_syntax
+    unlet b:current_syntax
+  endif
+
+  let z = "'" " Default
+  for nr in range(char2nr('a'), char2nr('z'))
+    let char = nr2char(nr)
+    if a:b !~ char && a:e !~ char
+      let z = char
+      break
+    endif
+  endfor
+
+  silent! exec printf("syntax include @%s %s", a:lang, syns[0])
+  if a:inclusive
+    exec printf('syntax region %sSnip start=%s\(%s\)\@=%s ' .
+                \ 'end=%s\(%s\)\@<=\(\)%s contains=@%s containedin=ALL',
+                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
+  else
+    exec printf('syntax region %sSnip matchgroup=Snip start=%s%s%s ' .
+                \ 'end=%s%s%s contains=@%s containedin=ALL',
+                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
+  endif
+
+  if exists('csyn')
+    let b:current_syntax = csyn
+  endif
+endfunction
+
+function! s:file_type_handler()
+  if &ft =~ 'jinja' && &ft != 'jinja'
+    call s:syntax_include('jinja', '{{', '}}', 1)
+    call s:syntax_include('jinja', '{%', '%}', 1)
+  elseif &ft =~ 'mkd\|markdown'
+    for lang in ['ruby', 'yaml', 'vim', 'sh', 'bash:sh', 'python', 'java', 'c',
+          \ 'clojure', 'clj:clojure', 'scala', 'sql', 'gnuplot']
+      call s:syntax_include(split(lang, ':')[-1], '```'.split(lang, ':')[0], '```', 0)
+    endfor
+
+    highlight def link Snip Folded
+    setlocal textwidth=78
+    setlocal completefunc=emoji#complete
+  elseif &ft == 'sh'
+    call s:syntax_include('ruby', '#!ruby', '/\%$', 1)
+  endif
+endfunction
 
 
 " ===== 
