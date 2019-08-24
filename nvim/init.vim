@@ -203,10 +203,16 @@ Plug 'tikhomirov/vim-glsl'
 "
 
 
-"" Markdown
+" PLUGIN: iamcco/markdown-preview
+" https://github.com/iamcco/markdown-preview.nvim
+" markdown preview plugin for (neo)vim 
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()',
       \ 'for': 'markdown', 'on': 'MarkdownPreview' }
 
+" PLUGIN: catphat/md-img-paste.vim
+" https://github.com/catphat/md-img-paste.vim
+" paste image to markdown (forked so PR could be implemented in a timely
+" manner)
 Plug 'catphat/md-img-paste.vim'
 
 
