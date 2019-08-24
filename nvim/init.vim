@@ -1,7 +1,6 @@
 " catphat's nvim.init
 " Heavily inspired by 'junegunn/dotfiles'
 
-
 let s:darwin = has('mac')
 
 " ===== 
@@ -92,30 +91,6 @@ if exists('##TextYankPost')
 	let g:highlightedyank_highlight_duration = 100
 endif
 
-" PLUGIN: majutsushi/tagbar
-" https://github.com/majutsushi/tagbar
-"
-" >> What Tagbar is
-" Tagbar is a Vim plugin that provides an easy way to browse the tags of the 
-" current file and get an overview of its structure. It does this by creating 
-" a sidebar that displays the ctags-generated tags of the current file, 
-" ordered by their scope. This means that for example methods in C++ are 
-" displayed under the class they are defined in.
-"
-" >> What Tagbar is not
-" Tagbar is not a general-purpose tool for managing tags files. It only 
-" creates the tags it needs on-the-fly in-memory without creating any files. 
-" tags file management is provided by other plugins, like for example easytags.
-"
-" Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
-
-
-" I initially started vista.vim with an intention of replacing tagbar as it
-" seemingly doesn't have a plan to support the promising Language Server
-" Protocol and async processing.
-"Plug 'liuchengxu/vista.vim'
-
-
 " https://github.com/vim-airline/vim-airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -135,16 +110,6 @@ Plug 'tpope/vim-rhubarb'
 " Show a diff using Vim its sign column. 
 Plug 'mhinz/vim-signify'
 
-"" PLUGIN: justinmk/vim-dirvish
-"" https://github.com/justinmk/vim-dirvish
-"" Path navigator designed to work with Vim's built-in mechanisms.
-"Plug 'justinmk/vim-dirvish'
-"
-"" PLUGIN: kristijanhusak/vim-dirvish-git
-"" https://github.com/kristijanhusak/vim-dirvish-git
-"" Git support for dirvish.vim 
-"Plug 'kristijanhusak/vim-dirvish-git'
-
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 augroup nerd_loader
   autocmd!
@@ -155,26 +120,6 @@ augroup nerd_loader
         \|   execute 'autocmd! nerd_loader'
         \| endif
 augroup END
-
-"" PLUGIN: Shougo/deoplete.nvim 
-"" https://github.com/Shougo/deoplete.nvim
-"" Dark powered asynchronous completion framework for neovim/Vim8 
-"if has('nvim')
-"  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-"else
-"  Plug 'Shougo/deoplete.nvim'
-"  Plug 'roxma/nvim-yarp'
-"  Plug 'roxma/vim-hug-neovim-rpc'
-"endif
-"let g:deoplete#enable_at_startup = 1
-"
-"" PLUGIN: ncm2/float-preview.nvim
-"" https://github.com/ncm2/float-preview.nvim
-"" Less annoying completion preview window based on neovim's floating window 
-"Plug 'ncm2/float-preview.nvim'
-"
-
-" Languages
 
 " PLUGIN: neoclide/coc.nvim
 " https://github.com/neoclide/coc.nvim
@@ -187,22 +132,6 @@ Plug 'bfrg/vim-cpp-modern'
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'tikhomirov/vim-glsl'
 
-"" PLUGIN: autozimu/LanguageClient-neovim
-"" https://github.com/autozimu/LanguageClient-neovim
-"" Language Server Protocol (LSP) support for vim and neovim.
-"Plug 'autozimu/LanguageClient-neovim', {
-"    \ 'branch': 'next',
-"    \ 'do': 'bash install.sh',
-"    \ }
-"
-"" LANG: C/C++
-"let g:LanguageClient_serverCommands = {
-"    \ 'cpp': ['cquery', '--log-file=/tmp/cq.log'],
-"    \ 'c': ['cquery', '--log-file=/tmp/cq.log'],
-"    \ }
-"
-
-
 " PLUGIN: iamcco/markdown-preview
 " https://github.com/iamcco/markdown-preview.nvim
 " markdown preview plugin for (neo)vim 
@@ -214,7 +143,6 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()',
 " paste image to markdown (forked so PR could be implemented in a timely
 " manner)
 Plug 'catphat/md-img-paste.vim'
-
 
 " Colors
 Plug 'junegunn/seoul256.vim'
