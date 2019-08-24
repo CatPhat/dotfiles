@@ -149,6 +149,11 @@ Plug 'catphat/md-img-paste.vim'
 " Go development plugin for Vim 
 Plug 'fatih/vim-go'
 
+" PLUGIN: mattn/emmet-vim
+" https://github.com/mattn/emmet-vim/
+" vim plugins for HTML and CSS hi-speed coding.
+Plug 'mattn/emmet-vim'
+
 " Colors
 Plug 'junegunn/seoul256.vim'
 Plug 'tomasr/molokai'
@@ -887,6 +892,11 @@ let g:airline#extensions#coc#enabled = 1
 let g:tagbar_sort = 0
 let g:tagbar_autofocus = 1
 nnoremap <silent> <Leader>[ :TagbarToggle<CR>
+
+" ----------------------------------------------------------------------------
+" Emmet
+" ----------------------------------------------------------------------------
+let g:user_emmet_leader_key=','
 
 " ===== 
 " ||| PLUGINGS --- END
