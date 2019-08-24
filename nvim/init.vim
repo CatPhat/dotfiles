@@ -144,6 +144,11 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()',
 " manner)
 Plug 'catphat/md-img-paste.vim'
 
+" PLUGIN: fatih/vim-go
+" https://github.com/fatih/vim-go
+" Go development plugin for Vim 
+Plug 'fatih/vim-go'
+
 " Colors
 Plug 'junegunn/seoul256.vim'
 Plug 'tomasr/molokai'
