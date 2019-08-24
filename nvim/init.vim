@@ -107,7 +107,18 @@ endif
 " creates the tags it needs on-the-fly in-memory without creating any files. 
 " tags file management is provided by other plugins, like for example easytags.
 "
-Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
+" Plug 'majutsushi/tagbar', { 'on': 'TagbarToggle' }
+
+
+" I initially started vista.vim with an intention of replacing tagbar as it
+" seemingly doesn't have a plan to support the promising Language Server
+" Protocol and async processing.
+"Plug 'liuchengxu/vista.vim'
+
+
+" https://github.com/vim-airline/vim-airline
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " PLUGIN: tpope/vim-fugitive
 " https://github.com/tpope/vim-fugitive
@@ -144,6 +155,58 @@ augroup nerd_loader
         \|   execute 'autocmd! nerd_loader'
         \| endif
 augroup END
+
+"" PLUGIN: Shougo/deoplete.nvim 
+"" https://github.com/Shougo/deoplete.nvim
+"" Dark powered asynchronous completion framework for neovim/Vim8 
+"if has('nvim')
+"  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"else
+"  Plug 'Shougo/deoplete.nvim'
+"  Plug 'roxma/nvim-yarp'
+"  Plug 'roxma/vim-hug-neovim-rpc'
+"endif
+"let g:deoplete#enable_at_startup = 1
+"
+"" PLUGIN: ncm2/float-preview.nvim
+"" https://github.com/ncm2/float-preview.nvim
+"" Less annoying completion preview window based on neovim's floating window 
+"Plug 'ncm2/float-preview.nvim'
+"
+
+" Languages
+
+" PLUGIN: neoclide/coc.nvim
+" https://github.com/neoclide/coc.nvim
+" Intellisense engine for vim8 & neovim, full language server protocol
+" support as VSCode 
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc-snippets', {'do': 'yarn install --frozen-lockfile'}
+
+Plug 'bfrg/vim-cpp-modern'
+Plug 'jackguo380/vim-lsp-cxx-highlight'
+Plug 'tikhomirov/vim-glsl'
+
+"" PLUGIN: autozimu/LanguageClient-neovim
+"" https://github.com/autozimu/LanguageClient-neovim
+"" Language Server Protocol (LSP) support for vim and neovim.
+"Plug 'autozimu/LanguageClient-neovim', {
+"    \ 'branch': 'next',
+"    \ 'do': 'bash install.sh',
+"    \ }
+"
+"" LANG: C/C++
+"let g:LanguageClient_serverCommands = {
+"    \ 'cpp': ['cquery', '--log-file=/tmp/cq.log'],
+"    \ 'c': ['cquery', '--log-file=/tmp/cq.log'],
+"    \ }
+"
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()',
+      \ 'for': 'markdown', 'on': 'MarkdownPreview' }
+
+Plug 'catphat/md-img-paste.vim'
+
 
 " Colors
 Plug 'junegunn/seoul256.vim'
@@ -216,6 +279,10 @@ set nocursorline
 set nrformats=hex
 silent! set cryptmethod=blowfish2
 
+" Spellcheck
+autocmd BufRead,BufNewFile *.md setlocal spell | set complete+=kspell
+
+
 if has('termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
@@ -258,13 +325,15 @@ set complete-=i
 " mouse
 silent! set ttymouse=xterm2
 set mouse=a
+"
+"" 80 chars/line
+"set textwidth=0
+"if exists('&colorcolumn')
+"  set colorcolumn=80
+"endif
 
-" 80 chars/line
-set textwidth=0
-if exists('&colorcolumn')
-  set colorcolumn=80
-endif
-
+highlight ColorColumn ctermbg=magenta "set to whatever you like
+call matchadd('ColorColumn', '\%81v', 100) "set column nr
 " Keep the cursor on the same column
 set nostartofline
 
@@ -344,17 +413,17 @@ nnoremap <C-p> <C-i>
 " <leader>n | NERD Tree
 nnoremap <leader>n :NERDTreeToggle<cr>
 
-" jk | Escaping!
-inoremap jk <Esc>
-xnoremap jk <Esc>
-cnoremap jk <C-c>
+"" jk | Escaping!
+"inoremap jk <Esc>
+"xnoremap jk <Esc>
+"cnoremap jk <C-c>
 
-" Movement in insert mode
-inoremap <C-h> <C-o>h
-inoremap <C-l> <C-o>a
-inoremap <C-j> <C-o>j
-inoremap <C-k> <C-o>k
-inoremap <C-^> <C-o><C-^>
+""" Movement in insert mode
+"inoremap <C-h> <C-o>h
+"inoremap <C-l> <C-o>a
+"inoremap <C-j> <C-o>j
+"inoremap <C-k> <C-o>k
+"inoremap <C-^> <C-o><C-^>
 
 " Make Y behave like other capitals
 nnoremap Y y$
@@ -487,6 +556,60 @@ if s:darwin
   command! -range=% -nargs=? -complete=customlist,s:colors CopyRTF call s:copy_rtf(<line1>, <line2>, <f-args>)
 endif
 
+
+" ----------------------------------------------------------------------------
+" <F5> / <F6> | Run script
+" ----------------------------------------------------------------------------
+function! s:run_this_script(output)
+  let head   = getline(1)
+  let pos    = stridx(head, '#!')
+  let file   = expand('%:p')
+  let ofile  = tempname()
+  let rdr    = " 2>&1 | tee ".ofile
+  let win    = winnr()
+  let prefix = a:output ? 'silent !' : '!'
+  " Shebang found
+  if pos != -1
+    execute prefix.strpart(head, pos + 2).' '.file.rdr
+  " Shebang not found but executable
+  elseif executable(file)
+    execute prefix.file.rdr
+  elseif &filetype == 'ruby'
+    execute prefix.'/usr/bin/env ruby '.file.rdr
+  elseif &filetype == 'tex'
+    execute prefix.'latex '.file. '; [ $? -eq 0 ] && xdvi '. expand('%:r').rdr
+  elseif &filetype == 'dot'
+    let svg = expand('%:r') . '.svg'
+    let png = expand('%:r') . '.png'
+    " librsvg >> imagemagick + ghostscript
+    execute 'silent !dot -Tsvg '.file.' -o '.svg.' && '
+          \ 'rsvg-convert -z 2 '.svg.' > '.png.' && open '.png.rdr
+  else
+    return
+  end
+  redraw!
+  if !a:output | return | endif
+
+  " Scratch buffer
+  if exists('s:vim_exec_buf') && bufexists(s:vim_exec_buf)
+    execute bufwinnr(s:vim_exec_buf).'wincmd w'
+    %d
+  else
+    silent!  bdelete [vim-exec-output]
+    silent!  vertical botright split new
+    silent!  file [vim-exec-output]
+    setlocal buftype=nofile bufhidden=wipe noswapfile
+    let      s:vim_exec_buf = winnr()
+  endif
+  execute 'silent! read' ofile
+  normal! gg"_dd
+  execute win.'wincmd w'
+endfunction
+nnoremap <silent> <F5> :call <SID>run_this_script(0)<cr>
+nnoremap <silent> <F6> :call <SID>run_this_script(1)<cr>
+
+
+
 " ----------------------------------------------------------------------------
 " <F8> | Color scheme selector
 " ----------------------------------------------------------------------------
@@ -506,61 +629,61 @@ nnoremap <silent> <F8> :call <SID>rotate_colors()<cr>
 " ----------------------------------------------------------------------------
 " Syntax highlighting in code snippets
 " ----------------------------------------------------------------------------
-function! s:syntax_include(lang, b, e, inclusive)
-  let syns = split(globpath(&rtp, "syntax/".a:lang.".vim"), "\n")
-  if empty(syns)
-    return
-  endif
-
-  if exists('b:current_syntax')
-    let csyn = b:current_syntax
-    unlet b:current_syntax
-  endif
-
-  let z = "'" " Default
-  for nr in range(char2nr('a'), char2nr('z'))
-    let char = nr2char(nr)
-    if a:b !~ char && a:e !~ char
-      let z = char
-      break
-    endif
-  endfor
-
-  silent! exec printf("syntax include @%s %s", a:lang, syns[0])
-  if a:inclusive
-    exec printf('syntax region %sSnip start=%s\(%s\)\@=%s ' .
-                \ 'end=%s\(%s\)\@<=\(\)%s contains=@%s containedin=ALL',
-                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
-  else
-    exec printf('syntax region %sSnip matchgroup=Snip start=%s%s%s ' .
-                \ 'end=%s%s%s contains=@%s containedin=ALL',
-                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
-  endif
-
-  if exists('csyn')
-    let b:current_syntax = csyn
-  endif
-endfunction
-
-function! s:file_type_handler()
-  if &ft =~ 'jinja' && &ft != 'jinja'
-    call s:syntax_include('jinja', '{{', '}}', 1)
-    call s:syntax_include('jinja', '{%', '%}', 1)
-  elseif &ft =~ 'mkd\|markdown'
-    for lang in ['ruby', 'yaml', 'vim', 'sh', 'bash:sh', 'python', 'java', 'c',
-          \ 'clojure', 'clj:clojure', 'scala', 'sql', 'gnuplot']
-      call s:syntax_include(split(lang, ':')[-1], '```'.split(lang, ':')[0], '```', 0)
-    endfor
-
-    highlight def link Snip Folded
-    setlocal textwidth=78
-    setlocal completefunc=emoji#complete
-  elseif &ft == 'sh'
-    call s:syntax_include('ruby', '#!ruby', '/\%$', 1)
-  endif
-endfunction
-
-
+"function! s:syntax_include(lang, b, e, inclusive)
+"  let syns = split(globpath(&rtp, "syntax/".a:lang.".vim"), "\n")
+"  if empty(syns)
+"    return
+"  endif
+"
+"  if exists('b:current_syntax')
+"    let csyn = b:current_syntax
+"    unlet b:current_syntax
+"  endif
+"
+"  let z = "'" " Default
+"  for nr in range(char2nr('a'), char2nr('z'))
+"    let char = nr2char(nr)
+"    if a:b !~ char && a:e !~ char
+"      let z = char
+"      break
+"    endif
+"  endfor
+"
+"  silent! exec printf("syntax include @%s %s", a:lang, syns[0])
+"  if a:inclusive
+"    exec printf('syntax region %sSnip start=%s\(%s\)\@=%s ' .
+"                \ 'end=%s\(%s\)\@<=\(\)%s contains=@%s containedin=ALL',
+"                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
+"  else
+"    exec printf('syntax region %sSnip matchgroup=Snip start=%s%s%s ' .
+"                \ 'end=%s%s%s contains=@%s containedin=ALL',
+"                \ a:lang, z, a:b, z, z, a:e, z, a:lang)
+"  endif
+"
+"  if exists('csyn')
+"    let b:current_syntax = csyn
+"  endif
+"endfunction
+"
+"function! s:file_type_handler()
+"  if &ft =~ 'jinja' && &ft != 'jinja'
+"    call s:syntax_include('jinja', '{{', '}}', 1)
+"    call s:syntax_include('jinja', '{%', '%}', 1)
+"  elseif &ft =~ 'mkd\|markdown'
+"    for lang in ['ruby', 'yaml', 'vim', 'sh', 'bash:sh', 'python', 'java', 'c',
+"          \ 'clojure', 'clj:clojure', 'scala', 'sql', 'gnuplot']
+"      call s:syntax_include(split(lang, ':')[-1], '```'.split(lang, ':')[0], '```', 0)
+"    endfor
+"
+"    highlight def link Snip Folded
+"    setlocal textwidth=78
+"    setlocal completefunc=emoji#complete
+"  elseif &ft == 'sh'
+"    call s:syntax_include('ruby', '#!ruby', '/\%$', 1)
+"  endif
+"endfunction
+"
+"
 " ===== 
 " ||| MAPPINGS --- END
 " ===== 
@@ -661,7 +784,7 @@ augroup vimrc
   au BufNewFile,BufRead Dockerfile*         set filetype=dockerfile
 
   " Included syntax
-  au FileType,ColorScheme * call <SID>file_type_handler()
+  "  au FileType,ColorScheme * call <SID>file_type_handler()
 
   " Fugitive
   au FileType gitcommit setlocal completefunc=emoji#complete
@@ -691,6 +814,7 @@ augroup END
 " ----------------------------------------------------------------------------
 " Help in new tabs
 " ----------------------------------------------------------------------------
+
 function! s:helptab()
   if &buftype == 'help'
     wincmd T
@@ -699,6 +823,129 @@ function! s:helptab()
 endfunction
 autocmd vimrc BufEnter *.txt call s:helptab()
 
+" ----------------------------------------------------------------------------
+" Completetion-With-Sources (COC)
+" ----------------------------------------------------------------------------
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+set statusline^=%{coc#status()}
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
+
+let g:coc_snippet_prev = '<S-tab>'
+
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+"inoremap <expr> <C-n> pumvisible() ? "\<C-n>" : "\<Tab>"
+"inoremap <expr> <C-p> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+nmap <silent> <C-d> <Plug>(coc-definition)
+nmap <silent> <C-r> <Plug>(coc-references)
+nn <silent> K :call CocActionAsync('doHover')<cr>
+
+set updatetime=300
+au CursorHold * sil call CocActionAsync('highlight')
+au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
+
+nn <silent><buffer> <C-l> :call CocLocations('ccls','$ccls/navigate',{'direction':'D'})<cr>
+nn <silent><buffer> <C-k> :call CocLocations('ccls','$ccls/navigate',{'direction':'L'})<cr>
+nn <silent><buffer> <C-j> :call CocLocations('ccls','$ccls/navigate',{'direction':'R'})<cr>
+nn <silent><buffer> <C-h> :call CocLocations('ccls','$ccls/navigate',{'direction':'U'})<cr>
+
+" bases
+nn <silent> xb :call CocLocations('ccls','$ccls/inheritance')<cr>
+" bases of up to 3 levels
+nn <silent> xb :call CocLocations('ccls','$ccls/inheritance',{'levels':3})<cr>
+" derived
+nn <silent> xd :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true})<cr>
+" derived of up to 3 levels
+nn <silent> xD :call CocLocations('ccls','$ccls/inheritance',{'derived':v:true,'levels':3})<cr>
+
+" caller
+nn <silent> xc :call CocLocations('ccls','$ccls/call')<cr>
+" callee
+nn <silent> xC :call CocLocations('ccls','$ccls/call',{'callee':v:true})<cr>
+
+" $ccls/member
+" member variables / variables in a namespace
+nn <silent> xm :call CocLocations('ccls','$ccls/member')<cr>
+" member functions / functions in a namespace
+nn <silent> xf :call CocLocations('ccls','$ccls/member',{'kind':3})<cr>
+" nested classes / types in a namespace
+nn <silent> xs :call CocLocations('ccls','$ccls/member',{'kind':2})<cr>
+
+nmap <silent> xt <Plug>(coc-type-definition)<cr>
+nn <silent> xv :call CocLocations('ccls','$ccls/vars')<cr>
+nn <silent> xV :call CocLocations('ccls','$ccls/vars',{'kind':1})<cr>
+
+nn xx x
+
+" grep word under cursor
+command! -nargs=+ -complete=custom,s:GrepArgs Rg exe 'CocList grep '.<q-args>
+
+function! s:GrepArgs(...)
+  let list = ['-S', '-smartcase', '-i', '-ignorecase', '-w', '-word',
+        \ '-e', '-regex', '-u', '-skip-vcs-ignores', '-t', '-extension']
+  return join(list, "\n")
+endfunction
+
+" Keymapping for grep word under cursor with interactive mode
+nnoremap <silent> <Leader>cf :exe 'CocList -I --input='.expand('<cword>').' grep'<CR>
+
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" }}}
+" ============================================================================
+" markdown-preview {{{
+" ============================================================================
+
+let g:mkdp_browser = 'firefox'
+
+autocmd FileType markdown nmap <silent> <leader>p :call mdip#MarkdownClipboardImage()<CR>
+" there are some defaults for image directory and image name, you can change them
+" let g:mdip_imgdir = 'img'
+" let g:mdip_imgname = 'image'
+
+
+" ----------------------------------------------------------------------------
+" Airline
+" ----------------------------------------------------------------------------
+let g:airline_powerline_fonts = 1
+let g:airline_theme='deus'
+let g:airline#extensions#coc#enabled = 1
+"let g:airline_solarized_bg='dark'
+
+" ----------------------------------------------------------------------------
+" Tagbar
+" ----------------------------------------------------------------------------
+let g:tagbar_sort = 0
+let g:tagbar_autofocus = 1
+nnoremap <silent> <Leader>[ :TagbarToggle<CR>
 
 " ===== 
 " ||| PLUGINGS --- END
