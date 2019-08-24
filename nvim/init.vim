@@ -202,6 +202,8 @@ Plug 'tikhomirov/vim-glsl'
 "    \ }
 "
 
+
+"" Markdown
 Plug 'iamcco/markdown-preview.nvim', { 'do': ':call mkdp#util#install()',
       \ 'for': 'markdown', 'on': 'MarkdownPreview' }
 
