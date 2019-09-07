@@ -311,6 +311,12 @@ if has('nvim')
     \ endif
 endif
 
+" Go formatting
+au FileType go set noexpandtab
+au FileType go set shiftwidth=4
+au FileType go set softtabstop=4
+au FileType go set tabstop=4
+
 " ===== 
 " ||| GENERAL-SETTINGS --- END
 " ===== 
@@ -780,7 +786,12 @@ inoremap <silent><expr> <TAB>
       \ coc#refresh()
 
 "set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-set statusline^=%{coc#status()}
+" set cmdline^=banana
+"set statusline^=%{coc#status()}
+"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+set signcolumn=yes
+
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -803,13 +814,18 @@ imap <C-j> <Plug>(coc-snippets-expand-jump)
 "inoremap <expr> <C-n> pumvisible() ? "\<C-n>" : "\<Tab>"
 "inoremap <expr> <C-p> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-nmap <silent> <C-d> <Plug>(coc-definition)
-nmap <silent> <C-r> <Plug>(coc-references)
+"nmap <silent> <C-d> <Plug>(coc-definition)
+"nmap <silent> <C-r> <Plug>(coc-references)
 nn <silent> K :call CocActionAsync('doHover')<cr>
 
 set updatetime=300
-au CursorHold * sil call CocActionAsync('highlight')
-au CursorHoldI * sil call CocActionAsync('showSignatureHelp')
+" Highlight symbol under cursor on CursorHold
+au CursorHold * silent call CocActionAsync('highlight')
+
+au InsertEnter,CursorHoldI,CursorMovedI * sil call CocActionAsync('showSignatureHelp')
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
 
 nn <silent><buffer> <C-l> :call CocLocations('ccls','$ccls/navigate',{'direction':'D'})<cr>
 nn <silent><buffer> <C-k> :call CocLocations('ccls','$ccls/navigate',{'direction':'L'})<cr>
@@ -865,6 +881,46 @@ augroup mygroup
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use U to show documentation in preview window
+nnoremap <silent> U :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
 " }}}
 " ============================================================================
 " markdown-preview {{{
@@ -897,6 +953,27 @@ nnoremap <silent> <Leader>[ :TagbarToggle<CR>
 " Emmet
 " ----------------------------------------------------------------------------
 let g:user_emmet_leader_key=','
+
+" ----------------------------------------------------------------------------
+" vim-go
+" ----------------------------------------------------------------------------
+
+" disable vim-go :GoDef short cut (gd)
+" this is handled by LanguageClient [LC]
+let g:go_def_mapping_enabled = 0
+
+let g:go_highlight_extra_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_parameters = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_variable_declarations = 1
+let g:go_highlight_variable_assignments = 1
+
+let g:go_auto_type_info = 1
+let g:go_updatetime = 0
 
 " ===== 
 " ||| PLUGINGS --- END

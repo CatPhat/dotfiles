@@ -16,3 +16,6 @@ supercrabtree/k
 sindresorhus/pure
 zsh-users/zsh-syntax-highlighting
 zsh-users/zsh-history-substring-search
+
+# https://github.com/twang817/zsh-ssh-agent
+twang817/zsh-ssh-agent
