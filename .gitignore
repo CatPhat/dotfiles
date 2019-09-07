@@ -41,5 +41,7 @@ polybar/launch.sh
 polybar/config
 nvim/.netrwhist
 
+x/arch-whitebox/xinitrc.d/generated*
+
 zshrc.d/generated*
 zshrc.d/private*
