@@ -40,3 +40,6 @@ oceanic-next-shell/git-repo
 polybar/launch.sh
 polybar/config
 nvim/.netrwhist
+
+zshrc.d/generated*
+zshrc.d/private*
