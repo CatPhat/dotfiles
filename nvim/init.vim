@@ -155,6 +155,8 @@ Plug 'fatih/vim-go'
 Plug 'mattn/emmet-vim'
 
 " Colors
+"Plug 'chriskempson/base16-vim'
+Plug 'tomasiser/vim-code-dark'
 Plug 'junegunn/seoul256.vim'
 Plug 'tomasr/molokai'
 Plug 'chriskempson/vim-tomorrow-theme'
@@ -221,18 +223,17 @@ set clipboard=unnamed
 set foldlevelstart=99
 set grepformat=%f:%l:%c:%m,%f:%l:%m
 set completeopt=menuone,preview
-set nocursorline
+"set nocursorline
 set nrformats=hex
 silent! set cryptmethod=blowfish2
 
 " Spellcheck
 autocmd BufRead,BufNewFile *.md setlocal spell | set complete+=kspell
 
-
-if has('termguicolors')
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-  set termguicolors
+if (has("termguicolors"))
+	let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+	let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+	set termguicolors
 endif
 
 function! s:statusline_expr()
@@ -283,33 +284,39 @@ call matchadd('ColorColumn', '\%81v', 100) "set column nr
 " Keep the cursor on the same column
 set nostartofline
 
-silent! colo deep-space
+"silent! colo base16
+"let base16colorspace=256 
+" fixes glitch? in colors when using vim with tmux
+"set t_Co=256
+"colorscheme base16-default-dark
 
-if has('nvim')
-  " https://github.com/neovim/neovim/issues/2897#issuecomment-115464516
-  let g:terminal_color_0 = '#4e4e4e'
-  let g:terminal_color_1 = '#d68787'
-  let g:terminal_color_2 = '#5f865f'
-  let g:terminal_color_3 = '#d8af5f'
-  let g:terminal_color_4 = '#85add4'
-  let g:terminal_color_5 = '#d7afaf'
-  let g:terminal_color_6 = '#87afaf'
-  let g:terminal_color_7 = '#d0d0d0'
-  let g:terminal_color_8 = '#626262'
-  let g:terminal_color_9 = '#d75f87'
-  let g:terminal_color_10 = '#87af87'
-  let g:terminal_color_11 = '#ffd787'
-  let g:terminal_color_12 = '#add4fb'
-  let g:terminal_color_13 = '#ffafaf'
-  let g:terminal_color_14 = '#87d7d7'
-  let g:terminal_color_15 = '#e4e4e4'
+"set termguicolors
 
-  set fillchars=vert:\|,fold:-
-  autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-endif
+"if has('nvim')
+"  " https://github.com/neovim/neovim/issues/2897#issuecomment-115464516
+"  let g:terminal_color_0 = '#4e4e4e'
+"  let g:terminal_color_1 = '#d68787'
+"  let g:terminal_color_2 = '#5f865f'
+"  let g:terminal_color_3 = '#d8af5f'
+"  let g:terminal_color_4 = '#85add4'
+"  let g:terminal_color_5 = '#d7afaf'
+"  let g:terminal_color_6 = '#87afaf'
+"  let g:terminal_color_7 = '#d0d0d0'
+"  let g:terminal_color_8 = '#626262'
+"  let g:terminal_color_9 = '#d75f87'
+"  let g:terminal_color_10 = '#87af87'
+"  let g:terminal_color_11 = '#ffd787'
+"  let g:terminal_color_12 = '#add4fb'
+"  let g:terminal_color_13 = '#ffafaf'
+"  let g:terminal_color_14 = '#87d7d7'
+"  let g:terminal_color_15 = '#e4e4e4'
+"
+"  set fillchars=vert:\|,fold:-
+"  autocmd BufReadPost *
+"    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+"    \   exe "normal! g`\"" |
+"    \ endif
+"endif
 
 " Go formatting
 au FileType go set noexpandtab
@@ -317,6 +324,7 @@ au FileType go set shiftwidth=4
 au FileType go set softtabstop=4
 au FileType go set tabstop=4
 
+syntax on
 " ===== 
 " ||| GENERAL-SETTINGS --- END
 " ===== 
@@ -388,7 +396,7 @@ function! s:zoom()
   if winnr('$') > 1
     tab split
   elseif len(filter(map(range(tabpagenr('$')), 'tabpagebuflist(v:val + 1)'),
-                  \ 'index(v:val, '.bufnr('').') >= 0')) > 1
+        \ 'index(v:val, '.bufnr('').') >= 0')) > 1
     tabclose
   endif
 endfunction
@@ -523,7 +531,7 @@ function! s:run_this_script(output)
   " Shebang found
   if pos != -1
     execute prefix.strpart(head, pos + 2).' '.file.rdr
-  " Shebang not found but executable
+    " Shebang not found but executable
   elseif executable(file)
     execute prefix.file.rdr
   elseif &filetype == 'ruby'
@@ -656,25 +664,25 @@ endif
 " Hide statusline of terminal buffer
 autocmd! FileType fzf
 autocmd  FileType fzf set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+      \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 
 let g:fzf_colors =
-\ { 'fg':      ['fg', 'Normal'],
-  \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
-  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
-  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
-  \ 'hl+':     ['fg', 'Statement'],
-  \ 'info':    ['fg', 'PreProc'],
-  \ 'border':  ['fg', 'Ignore'],
-  \ 'prompt':  ['fg', 'Conditional'],
-  \ 'pointer': ['fg', 'Exception'],
-  \ 'marker':  ['fg', 'Keyword'],
-  \ 'spinner': ['fg', 'Label'],
-  \ 'header':  ['fg', 'Comment'] }
+      \ { 'fg':      ['fg', 'Normal'],
+      \ 'bg':      ['bg', 'Normal'],
+      \ 'hl':      ['fg', 'Comment'],
+      \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+      \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+      \ 'hl+':     ['fg', 'Statement'],
+      \ 'info':    ['fg', 'PreProc'],
+      \ 'border':  ['fg', 'Ignore'],
+      \ 'prompt':  ['fg', 'Conditional'],
+      \ 'pointer': ['fg', 'Exception'],
+      \ 'marker':  ['fg', 'Keyword'],
+      \ 'spinner': ['fg', 'Label'],
+      \ 'header':  ['fg', 'Comment'] }
 
 command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+      \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 " nnoremap <silent> <Leader><Leader> :Files<CR>
 nnoremap <silent> <expr> <Leader><Leader> (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
@@ -682,10 +690,10 @@ nnoremap <silent> <Leader>C        :Colors<CR>
 nnoremap <silent> <Leader><Enter>  :Buffers<CR>
 nnoremap <silent> <Leader>L        :Lines<CR>
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
-  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
-  \                 <bang>0)
+      \ call fzf#vim#ag(<q-args>,
+      \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+      \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \                 <bang>0)
 nnoremap <silent> <Leader>ag       :Ag <C-R><C-W><CR>
 nnoremap <silent> <Leader>AG       :Ag <C-R><C-A><CR>
 xnoremap <silent> <Leader>ag       y:Ag <C-R>"<CR>
@@ -718,8 +726,8 @@ function! s:plug_help_sink(line)
 endfunction
 
 command! PlugHelp call fzf#run(fzf#wrap({
-  \ 'source': sort(keys(g:plugs)),
-  \ 'sink':   function('s:plug_help_sink')}))
+      \ 'source': sort(keys(g:plugs)),
+      \ 'sink':   function('s:plug_help_sink')}))
 
 " }}}
 " ============================================================================
@@ -790,6 +798,7 @@ inoremap <silent><expr> <TAB>
 "set statusline^=%{coc#status()}
 "set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 set signcolumn=yes
 
 
@@ -820,7 +829,7 @@ nn <silent> K :call CocActionAsync('doHover')<cr>
 
 set updatetime=300
 " Highlight symbol under cursor on CursorHold
-au CursorHold * silent call CocActionAsync('highlight')
+"au CursorHold * call CocActionAsync('getCurrentFunctionSymbol')
 
 au InsertEnter,CursorHoldI,CursorMovedI * sil call CocActionAsync('showSignatureHelp')
 
@@ -940,14 +949,15 @@ autocmd FileType markdown nmap <silent> <leader>p :call mdip#MarkdownClipboardIm
 let g:airline_powerline_fonts = 1
 let g:airline_theme='deus'
 let g:airline#extensions#coc#enabled = 1
+"let g:airline_section_c = '%{coc#status()}%'
 "let g:airline_solarized_bg='dark'
 
 " ----------------------------------------------------------------------------
 " Tagbar
 " ----------------------------------------------------------------------------
-let g:tagbar_sort = 0
-let g:tagbar_autofocus = 1
-nnoremap <silent> <Leader>[ :TagbarToggle<CR>
+"let g:tagbar_sort = 0
+"let g:tagbar_autofocus = 1
+"nnoremap <silent> <Leader>[ :TagbarToggle<CR>
 
 " ----------------------------------------------------------------------------
 " Emmet
@@ -958,6 +968,8 @@ let g:user_emmet_leader_key=','
 " vim-go
 " ----------------------------------------------------------------------------
 
+"let g:go_def_mode='gopls'
+"let g:go_info_mode='gopls'
 " disable vim-go :GoDef short cut (gd)
 " this is handled by LanguageClient [LC]
 let g:go_def_mapping_enabled = 0
@@ -969,11 +981,31 @@ let g:go_highlight_function_parameters = 1
 let g:go_highlight_function_calls = 1
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
-let g:go_highlight_variable_declarations = 1
+let g:go_highlight_variable_declarations = 0
 let g:go_highlight_variable_assignments = 1
+"
+let g:go_highlight_structs = 1 
+let g:go_highlight_methods = 1
+let g:go_highlight_build_constraints = 1
 
-let g:go_auto_type_info = 1
+"let g:go_auto_type_info = 1
 let g:go_updatetime = 0
+let g:go_auto_sameids = 0
+
+" ----------------------------------------------------------------------------
+" vim-nord
+" ----------------------------------------------------------------------------
+
+set cursorline
+
+let g:nord_italic = 1
+let g:nord_italic_comments = 1
+let g:nord_underline = 1
+let g:nord_uniform_status_lines = 1
+let g:nord_uniform_diff_background = 1
+let g:nord_cursor_line_number_background = 1
+
+colorscheme nord
 
 " ===== 
 " ||| PLUGINGS --- END
