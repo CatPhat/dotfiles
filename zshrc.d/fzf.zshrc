@@ -12,4 +12,5 @@ else
 fi
 
 # shellcheck disable=SC1091
-. /usr/share/fzf/completion.zsh
+#. /usr/share/fzf/completion.zsh
+. ~/.fzf.zsh
